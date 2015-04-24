@@ -30,7 +30,7 @@
 		</activity>
 
 		<meta-data android:name="com.google.android.maps.v2.API_KEY"
-			android:value="AIzaSyC3NoHMpzBH1pLIu57QpwOzlNwuhD8phGA" />
+			android:value="AIzaSyAkIGt-25UP7ti2c_LKTbz4ILnRjWP5qew" />
 		<meta-data android:name="com.google.android.gms.version"
 			android:value="@integer/google_play_services_version" />
 		<provider android:name=".sync.PointsProvider"
