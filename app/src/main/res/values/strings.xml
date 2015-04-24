@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="app_name">Geodesic</string>
+
+    <string-array name="menu_headers">
+        <item>Actions</item>
+        <item>Help</item>
+    </string-array>
+    <string-array name="actions_types">
+        <item>Direct Problem</item>
+        <item>Indirect Problem</item>
+        <item>Delete all markers</item>
+        <item>Clear pins</item>
+        <item>Search Location</item>
+        <item>Switch account</item>
+    </string-array>
+    <string-array name="help_items">
+        <item>About</item>
+    </string-array>
+
+    <array name="nav_items_icons">
+        <item>@drawable/ic_calc</item>
+        <item>@drawable/ic_calc</item>
+        <item>@drawable/ic_tool</item>
+        <item>@drawable/ic_clear</item>
+        <item>@drawable/ic_searh</item>
+        <item>@drawable/ic_signout</item>
+        <item>@drawable/ic_info</item>
+    </array>
+
+    <string name="map_terrain">Terrain</string>
+    <string name="map_normal">Normal</string>
+    <string name="map_hybrid">Hybrid</string>
+    <string name="undirect_geodesic">Indirect Geodesic Problem</string>
+    <string name="direct_geodesic">Direct Geodesic Problem</string>
+    <string name="drawer_open">Open Geodesic menu</string>
+    <string name="drawer_close">Close Geodesic menu</string>
+    <string name="desc_list_item_icon">Item Icon</string>
+    <string name="title_activity_about_program">About Program</string>
+    <string name="action_settings">Map Types</string>
+    <string name="description_refresh">Sync with server</string>
+     <string name="description_tool">Delete mode</string>
+    <string name="lat1">Latitude1:</string>
+    <string name="lon1">Longitude1:</string>
+    <string name="lat2">Latitude2:</string>
+    <string name="lon2">Longitude2:</string>
+    <string name="azi">Azimuth1:</string>
+    <string name="dist">Distance:</string>
+    <string name="result">Result:</string>
+    <string name="nonres">No result</string>
+    <string name="solve">Solve!</string>
+
+</resources>

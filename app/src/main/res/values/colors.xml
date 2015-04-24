@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="list_background" type="color">#EC3D3E49</item>
+    <item name="list_header" type="color">#FA8C8E8A</item>
+    <item name="list_divider" type="color">#DD0F0F0F</item>
+    <item name="list_item_title" type="color">#ECF7CD</item>
+    <item name="marker_info_window_title" type="color">#3B6B49</item>
+    <item name="marker_info_window_coord" type="color">#C45938</item>
+    <item name="marker_info_window_snippet" type="color">#000000</item>
+    <item name="problem_calc_rezult_shadow" type="color">#6BA389</item>
+    <item name="text_on_map" type="color">#181447</item>
+    <item name="text_background_on_map" type="color">#FFFFFF</item>
+
+    <color name="black_overlay">#66000000</color>
+
+</resources>

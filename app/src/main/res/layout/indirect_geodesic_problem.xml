@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/lat1Un"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/lat1" />
+
+    <TextView
+        android:id="@+id/lon1Un"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lat1Un"
+        android:layout_below="@+id/lat1Un"
+        android:layout_marginTop="40dp"
+        android:text="@string/lon1" />
+
+    <TextView
+        android:id="@+id/lat2Un"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lon1Un"
+        android:layout_below="@+id/lon1Un"
+        android:layout_marginTop="41dp"
+        android:text="@string/lat2" />
+
+    <TextView
+        android:id="@+id/lon2Un"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lat2Un"
+        android:layout_below="@+id/lat2Un"
+        android:layout_marginTop="40dp"
+        android:text="@string/lon2" />
+
+    <EditText
+        android:id="@+id/lat1EditUnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lat1Un"
+        android:layout_alignBottom="@+id/lat1Un"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <EditText
+        android:id="@+id/lon1EditUnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lon1Un"
+        android:layout_alignBottom="@+id/lon1Un"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="numberDecimal|numberSigned" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/lat2EditUnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lat2Un"
+        android:layout_alignBottom="@+id/lat2Un"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <EditText
+        android:id="@+id/lon2EditUnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lon2Un"
+        android:layout_alignBottom="@+id/lon2Un"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <Button
+        android:id="@+id/solvebuttonUn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lon2EditUnd"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="@string/solve" />
+
+    <TextView
+        android:id="@+id/resultUn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/solvebuttonUn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:text="@string/result"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/resultviewUn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/resultUn"
+        android:layout_centerHorizontal="true"
+        android:background="@color/list_item_title"
+        android:shadowColor="@color/problem_calc_rezult_shadow"
+        android:text="@string/nonres"
+        android:textColor="@color/list_divider"
+        android:textSize="16sp" />
+
+</RelativeLayout>

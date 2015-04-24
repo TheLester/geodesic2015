@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       />
+
+    <TextView
+        android:id="@+id/area_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/text_background_on_map"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/text_on_map" />
+
+    <TextView
+        android:id="@+id/perim_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="22dp"
+        android:background="@color/text_background_on_map"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/text_on_map" />
+
+    <TextView
+        android:id="@+id/latitude_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="432dp"
+        android:background="@color/text_background_on_map"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/text_on_map" />
+
+    <TextView
+        android:id="@+id/longitude_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="450dp"
+        android:background="@color/text_background_on_map"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/text_on_map" />
+
+</RelativeLayout>
