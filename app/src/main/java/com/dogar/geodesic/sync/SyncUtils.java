@@ -18,9 +18,8 @@ package com.dogar.geodesic.sync;
 
 import android.content.ContentResolver;
 import android.os.Bundle;
-import android.os.Parcelable;
 
-import com.dogar.geodesic.map.MainActivity;
+import com.dogar.geodesic.activity.MainActivity;
 
 
 
@@ -37,9 +36,9 @@ public class SyncUtils {
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         
-        ContentResolver.requestSync(
-                MainActivity.getCredential().getSelectedAccount(),      // Sync account
-                PointsContract.CONTENT_AUTHORITY, // Content authority
-                b);                                      // Extras
+//        ContentResolver.requestSync(
+//                MainActivity.getCredential().getSelectedAccount(),      // Sync account
+//                PointsContract.CONTENT_AUTHORITY, // Content authority
+//                b);                                      // Extras
     }
 }

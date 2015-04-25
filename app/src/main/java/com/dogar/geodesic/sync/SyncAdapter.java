@@ -23,7 +23,7 @@ import android.util.Log;
 import com.dogar.geodesic.CloudEndpointUtils;
 import com.dogar.geodesic.geopointinfoendpoint.Geopointinfoendpoint;
 import com.dogar.geodesic.geopointinfoendpoint.model.GeoPointInfo;
-import com.dogar.geodesic.map.MainActivity;
+import com.dogar.geodesic.activity.MainActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.jackson.JacksonFactory;
@@ -272,11 +272,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	}
 
 	private Geopointinfoendpoint getEndpoint() {
-		try {
-			credential = MainActivity.getCredential();
-		} catch (Exception ex) {
-			credential = createAndGetCredential();
-		}
+//		try {
+//			credential = MainActivity.getCredential();
+//		} catch (Exception ex) {
+//			credential = createAndGetCredential();
+//		}
 
 		if (endpointBuilder == null) {
 			endpointBuilder = new Geopointinfoendpoint.Builder(

@@ -91,23 +91,23 @@ public class GoogleMapFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.google_map_layout, container,
                 false);
 
-        googleMap = getMapFragment().getMap();
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setInfoWindowAdapter(new GeodesicInfoWindowAdapter(
-                getActivity()));
+//        googleMap = getMapFragment().getMap();
+//        googleMap.setMyLocationEnabled(true);
+//        googleMap.setInfoWindowAdapter(new GeodesicInfoWindowAdapter(
+//                getActivity()));
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        settings = getActivity().getSharedPreferences("Geodesic", 0);
-        setMapClickListeners();
-        drawMarkersFromLocal();
-        areaLabel = (TextView) getView().findViewById(R.id.area_info);
-        perimeterLabel = (TextView) getView().findViewById(R.id.perim_info);
-        latitudeLabel = (TextView) getView().findViewById(R.id.latitude_info);
-        longitudeLabel = (TextView) getView().findViewById(R.id.longitude_info);
+//        settings = getActivity().getSharedPreferences("Geodesic", 0);
+//        setMapClickListeners();
+//        drawMarkersFromLocal();
+//        areaLabel = (TextView) getView().findViewById(R.id.area_info);
+//        perimeterLabel = (TextView) getView().findViewById(R.id.perim_info);
+//        latitudeLabel = (TextView) getView().findViewById(R.id.latitude_info);
+//        longitudeLabel = (TextView) getView().findViewById(R.id.longitude_info);
     }
 
     public void clearPins() {
