@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_tool"
-        android:icon="@drawable/ic_tool"
+        android:icon="@drawable/ic_del"
         android:orderInCategory="100"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/description_tool">
         <menu>
             <group android:checkableBehavior="all" >
                 <item
                     android:id="@+id/delete_mode"
                     android:orderInCategory="1"
-                    android:showAsAction="never"
+                    app:showAsAction="never"
                     android:title="@string/description_tool" />
             </group>
         </menu>
@@ -21,30 +22,30 @@
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_refresh"
         android:orderInCategory="101"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/description_refresh"/>
     <item
         android:id="@+id/map_menu"
         android:icon="@drawable/ic_layer"
         android:orderInCategory="102"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/action_settings">
         <menu>
             <group android:checkableBehavior="single" >
                 <item
                     android:id="@+id/map_terrain"
                     android:orderInCategory="1"
-                    android:showAsAction="ifRoom"
+                    app:showAsAction="ifRoom"
                     android:title="@string/map_terrain"/>
                 <item
                     android:id="@+id/map_normal"
                     android:orderInCategory="2"
-                    android:showAsAction="ifRoom"
+                    app:showAsAction="ifRoom"
                     android:title="@string/map_normal"/>
                 <item
                     android:id="@+id/map_hybrid"
                     android:orderInCategory="3"
-                    android:showAsAction="ifRoom"
+                    app:showAsAction="ifRoom"
                     android:title="@string/map_hybrid"/>
             </group>
         </menu>

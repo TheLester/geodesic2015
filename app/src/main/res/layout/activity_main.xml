@@ -10,7 +10,6 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-
         />
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

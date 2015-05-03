@@ -4,28 +4,25 @@
 
     <string name="app_name">Geodesic</string>
 
-    <string-array name="menu_headers">
-        <item>Actions</item>
-        <item>Help</item>
-    </string-array>
+
     <string-array name="actions_types">
+        <item>Actions</item>
         <item>Direct Problem</item>
         <item>Indirect Problem</item>
         <item>Delete all markers</item>
         <item>Clear pins</item>
         <item>Search Location</item>
         <item>Switch account</item>
-    </string-array>
-    <string-array name="help_items">
+        <item>Help</item>
         <item>About</item>
     </string-array>
 
     <array name="nav_items_icons">
         <item>@drawable/ic_calc</item>
         <item>@drawable/ic_calc</item>
-        <item>@drawable/ic_tool</item>
+        <item>@drawable/ic_del</item>
         <item>@drawable/ic_clear</item>
-        <item>@drawable/ic_searh</item>
+        <item>@drawable/ic_location</item>
         <item>@drawable/ic_signout</item>
         <item>@drawable/ic_info</item>
     </array>

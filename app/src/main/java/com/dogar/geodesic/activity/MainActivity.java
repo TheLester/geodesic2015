@@ -16,6 +16,7 @@
 
 package com.dogar.geodesic.activity;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -40,6 +41,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,74 +58,117 @@ import com.dogar.geodesic.dialog.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
+import com.dogar.geodesic.utils.SharedPreferencesUtils;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Main Activity,contains design pattern navigation drawer with actions.Have
- * options menu and responsible for authorization with Google Account.
- *
- * @author lester
- */
-public class MainActivity extends AppCompatActivity {
+import static com.dogar.geodesic.utils.Constants.*;
+import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
+
+public class MainActivity extends AppCompatActivity implements AccountHeader.OnAccountHeaderListener, Drawer.OnDrawerItemSelectedListener {
     @InjectView(R.id.main_toolbar) Toolbar toolbar;
 
 
-    private static final int REQUEST_ACCOUNT_PICKER = 2;
     private Menu mOptionsMenu;
 
     private GoogleMapFragment GMFragment;
-    private Object mSyncObserverHandle;
+    private Object            mSyncObserverHandle;
 
-    private Drawer.Result result;
+    private AccountHeader.Result headerResult;
+    private Drawer.Result        drawerResult;
+    private ArrayList<IProfile> profiles = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-        setGMFragment();
-
+        if (isLoggedIn(this)) {
+            setGMFragment();
+        } else {
+            chooseAccount();
+        }
 
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
-        result = new Drawer()
+        initMenu();
+    }
+
+    @Override
+    public boolean onProfileChanged(View view, IProfile iProfile, boolean b) {
+        Toast.makeText(this, iProfile.getEmail(), Toast.LENGTH_LONG).show();
+        saveLogin(this, iProfile.getEmail());
+        headerResult.setActiveProfile(getSavedProfile());
+        //TODO Refresh map
+        return true;
+    }
+
+    private void initProfiles() {
+        Account[] accounts = AccountManager.get(this).getAccountsByType(GOOGLE_TYPE);
+        for (Account account : accounts) {
+            profiles.add(new ProfileDrawerItem().withEmail(account.name));
+            Log.i("test", account.name);
+        }
+    }
+
+    private IProfile getSavedProfile() {
+        String savedEmail = getLoginEmail(this);
+        for (IProfile profile : profiles) {
+            if (profile.getEmail().equals(savedEmail)) {
+                return profile;
+            }
+        }
+        return null;
+    }
+
+    private void initMenu() {
+        if (profiles.isEmpty()) {
+            initProfiles();
+        }
+        /**Header*/
+        headerResult = new AccountHeader()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header_backgr)
+                .withOnAccountHeaderListener(this)
+                .withProfiles(profiles)
+                .build();
+        if(isLoggedIn(this)){
+            headerResult.setActiveProfile(getSavedProfile());
+        }
+        /**Menu*/
+        String[] headers = getResources().getStringArray(R.array.actions_types);
+        drawerResult = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(R.layout.header)
+                .withAccountHeader(headerResult)
+                .withOnDrawerItemSelectedListener(this)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_landscape),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_grade),
-                        new SectionDrawerItem().withName(R.string.direct_geodesic),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_location_city),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_local_bar),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_local_florist),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_style),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_person),
-                        new PrimaryDrawerItem().withName(R.string.direct_geodesic).withIcon(GoogleMaterial.Icon.gmd_local_see)
-                )
-//                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem drawerItem) {
-//                        if (drawerItem != null) {
-//                            if (drawerItem instanceof Nameable) {
-//                                toolbar.setTitle(((Nameable) drawerItem).getNameRes());
-//                            }
-//                            if (onFilterChangedListener != null) {
-//                                onFilterChangedListener.onFilterChanged(drawerItem.getIdentifier());
-//                            }
-//                        }
-//                    }
-//                })
-                .build();
-
+                        new SectionDrawerItem().withName(headers[0]),
+                        new PrimaryDrawerItem().withName(headers[1]).withIcon(R.drawable.ic_calc),
+                        new PrimaryDrawerItem().withName(headers[2]).withIcon(R.drawable.ic_calc),
+                        new PrimaryDrawerItem().withName(headers[3]).withIcon(R.drawable.ic_del),
+                        new PrimaryDrawerItem().withName(headers[4]).withIcon(R.drawable.ic_clear),
+                        new PrimaryDrawerItem().withName(headers[5]).withIcon(R.drawable.ic_location),
+                        new PrimaryDrawerItem().withName(headers[6]).withIcon(R.drawable.ic_signout),
+                        new SectionDrawerItem().withName(headers[7]),
+                        new PrimaryDrawerItem().withName(headers[8]).withIcon(R.drawable.ic_info)
+                ).build();
     }
 
     @Override
@@ -205,34 +250,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode == RESULT_CANCELED)
-//            this.finish();
-//        switch (requestCode) {
-//            case REQUEST_ACCOUNT_PICKER:
-//                if (data != null && data.getExtras() != null) {
-//                    String accountName = data.getExtras().getString(
-//                            AccountManager.KEY_ACCOUNT_NAME);
-//                    if (accountName != null) {
-//                        SharedPreferences.Editor editor = settings.edit();
-//                        editor.putString("ACCOUNT_NAME", accountName);
-//                        editor.commit();
-//                        setAccountName(accountName);
-//                        if (mAdapter != null) {
-//                            mAdapter.setHeaderTitle(accountName, 0);
-//                            mAdapter.notifyDataSetChanged();
-//                            mDrawerList.setAdapter(mAdapter);
-//                        }
-//                        ContentResolver.setIsSyncable(
-//                                credential.getSelectedAccount(), AUTHORITY, 1);
-//                        setGMFragment();
-//                    }
-//                }
-//                break;
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED) {
+            this.finish();
+        }
+        switch (requestCode) {
+            case REQUEST_ACCOUNT_PICKER:
+                if (data != null && data.getExtras() != null) {
+                    String accountName = data.getExtras().getString(
+                            AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        saveLogin(this, accountName);
+                        headerResult.setActiveProfile(getSavedProfile());
+                        setGMFragment();
+                    }
+                }
+                break;
+        }
+    }
+
+    private void chooseAccount() {
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{GOOGLE_TYPE},
+                false, null, null, null, null);
+        startActivityForResult(intent, REQUEST_ACCOUNT_PICKER);
+    }
 
     private void setRefreshActionButtonState(boolean refreshing) {
         if (mOptionsMenu == null) {
@@ -279,6 +322,45 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     };
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+        switch (position) {
+            case 2:
+                Intent intentD = new Intent(this, DirectProblemActivity.class);
+                startActivity(intentD);
+                break;
+            case 3:
+                Intent intentUnd = new Intent(this, IndirectProblemActivity.class);
+                startActivity(intentUnd);
+                break;
+            case 4:
+                openDeleteMarkersChooseDialog();
+                break;
+            case 5:
+                GMFragment.clearPins();
+                break;
+            case 6:
+                mDrawerLayout.closeDrawer(mDrawerList);
+                new PointSearcher(GMFragment.getMap(), this).showSearchDialog();
+                break;
+            case 7:
+                removeAccountName();
+                restartApp();
+                break;
+            case 9:
+                new AboutInfoDialog(this).showDialogWindow();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
 
 //    private void openDeleteMarkersChooseDialog() {
 //        AlertDialog.Builder alert = new AlertDialog.Builder(this);
