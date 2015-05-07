@@ -48,5 +48,9 @@
     <string name="result">Result:</string>
     <string name="nonres">No result</string>
     <string name="solve">Solve!</string>
+    <string name="delete_markers">Delete markers</string>
+    <string name="delete_markers_question">Do you really want to delete all markers?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

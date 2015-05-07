@@ -40,6 +40,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -50,6 +51,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
 import com.dogar.geodesic.adapters.NavDrawerListAdapter;
 import com.dogar.geodesic.map.GoogleMapFragment;
@@ -80,7 +82,7 @@ import butterknife.InjectView;
 import static com.dogar.geodesic.utils.Constants.*;
 import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
 
-public class MainActivity extends AppCompatActivity implements AccountHeader.OnAccountHeaderListener, Drawer.OnDrawerItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements AccountHeader.OnAccountHeaderListener, Drawer.OnDrawerItemClickListener {
     @InjectView(R.id.main_toolbar) Toolbar toolbar;
 
 
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 .withOnAccountHeaderListener(this)
                 .withProfiles(profiles)
                 .build();
-        if(isLoggedIn(this)){
+        if (isLoggedIn(this)) {
             headerResult.setActiveProfile(getSavedProfile());
         }
         /**Menu*/
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 .withToolbar(toolbar)
                 .withHeader(R.layout.header)
                 .withAccountHeader(headerResult)
-                .withOnDrawerItemSelectedListener(this)
+                .withOnDrawerItemClickListener(this)
                 .addDrawerItems(
                         new SectionDrawerItem().withName(headers[0]),
                         new PrimaryDrawerItem().withName(headers[1]).withIcon(R.drawable.ic_calc),
@@ -324,31 +326,32 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
     };
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l, IDrawerItem iDrawerItem) {
+
         switch (position) {
-            case 2:
+            case 1:
                 Intent intentD = new Intent(this, DirectProblemActivity.class);
                 startActivity(intentD);
                 break;
-            case 3:
+            case 2:
                 Intent intentUnd = new Intent(this, IndirectProblemActivity.class);
                 startActivity(intentUnd);
                 break;
-            case 4:
+            case 3:
                 openDeleteMarkersChooseDialog();
                 break;
-            case 5:
+            case 4:
                 GMFragment.clearPins();
                 break;
+            case 5:
+//                mDrawerLayout.closeDrawer(mDrawerList);
+//                new PointSearcher(GMFragment.getMap(), this).showSearchDialog();
+                break;
             case 6:
-                mDrawerLayout.closeDrawer(mDrawerList);
-                new PointSearcher(GMFragment.getMap(), this).showSearchDialog();
+//                removeAccountName();
+//                restartApp();
                 break;
-            case 7:
-                removeAccountName();
-                restartApp();
-                break;
-            case 9:
+            case 8:
                 new AboutInfoDialog(this).showDialogWindow();
                 break;
             default:
@@ -356,34 +359,24 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
+    private void openDeleteMarkersChooseDialog() {
+        MaterialDialog materialDialog = new MaterialDialog.Builder(this).title(R.string.delete_markers).
+                icon(getResources().getDrawable(R.drawable.ic_del)).
+                positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .content(R.string.delete_markers_question)
+                .negativeColorRes(R.color.white)
+                .positiveColorRes(R.color.white)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        ContentValues newValues = new ContentValues();
+                        newValues.put(PointsContract.Entry.COLUMN_NAME_DELETE, 1);
+                        getContentResolver().update(PointsContract.Entry.CONTENT_URI,
+                                newValues, SyncAdapter.ACCOUNT_FILTER,
+                                new String[]{getLoginEmail(MainActivity.this)});
+                        GMFragment.clearMarkersAndDrawNew();
+                    }
+                }).show();
     }
-
-
-//    private void openDeleteMarkersChooseDialog() {
-//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//        alert.setTitle("Deleting markers");
-//        alert.setIcon(R.drawable.ic_tool);
-//        alert.setMessage("Do you really want to delete all markers?");
-//        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface arg0, int arg1) {
-//                ContentValues newValues = new ContentValues();
-//                newValues.put(PointsContract.Entry.COLUMN_NAME_DELETE, 1);
-//                getContentResolver().update(PointsContract.Entry.CONTENT_URI,
-//                        newValues, SyncAdapter.ACCOUNT_FILTER,
-//                        new String[]{accountName});
-//                GMFragment.clearMarkersAndDrawNew();
-//            }
-//        });
-//        alert.setNegativeButton("Cancel",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
-//                    }
-//                });
-//        alert.show();
-//    }
 }
