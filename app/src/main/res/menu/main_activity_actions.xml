@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_tool"
-        android:icon="@drawable/ic_del"
+        android:icon="@drawable/ic_del_white"
         android:orderInCategory="100"
         app:showAsAction="always"
         android:title="@string/description_tool">

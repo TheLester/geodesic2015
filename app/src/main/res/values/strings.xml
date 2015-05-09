@@ -12,7 +12,6 @@
         <item>Delete all markers</item>
         <item>Clear pins</item>
         <item>Search Location</item>
-        <item>Switch account</item>
         <item>Help</item>
         <item>About</item>
     </string-array>
@@ -23,7 +22,6 @@
         <item>@drawable/ic_del</item>
         <item>@drawable/ic_clear</item>
         <item>@drawable/ic_location</item>
-        <item>@drawable/ic_signout</item>
         <item>@drawable/ic_info</item>
     </array>
 
@@ -52,5 +50,9 @@
     <string name="delete_markers_question">Do you really want to delete all markers?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="search_place">Enter a location</string>
+    <string name="search">Search</string>
+    <string name="dialog_search_location_title">Search a location</string>
+    <string name="dialog_search_location_content">Ented a valid location name</string>
 
 </resources>

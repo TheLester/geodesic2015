@@ -18,29 +18,15 @@ package com.dogar.geodesic.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -48,23 +34,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
-import com.dogar.geodesic.adapters.NavDrawerListAdapter;
+import com.dogar.geodesic.dialog.PointSearcherDialog;
 import com.dogar.geodesic.map.GoogleMapFragment;
-import com.dogar.geodesic.map.PointSearcher;
 import com.dogar.geodesic.dialog.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
-import com.dogar.geodesic.utils.SharedPreferencesUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -74,7 +55,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -157,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         drawerResult = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
+
                 .withHeader(R.layout.header)
                 .withAccountHeader(headerResult)
                 .withOnDrawerItemClickListener(this)
@@ -167,9 +148,8 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         new PrimaryDrawerItem().withName(headers[3]).withIcon(R.drawable.ic_del),
                         new PrimaryDrawerItem().withName(headers[4]).withIcon(R.drawable.ic_clear),
                         new PrimaryDrawerItem().withName(headers[5]).withIcon(R.drawable.ic_location),
-                        new PrimaryDrawerItem().withName(headers[6]).withIcon(R.drawable.ic_signout),
-                        new SectionDrawerItem().withName(headers[7]),
-                        new PrimaryDrawerItem().withName(headers[8]).withIcon(R.drawable.ic_info)
+                        new SectionDrawerItem().withName(headers[6]),
+                        new PrimaryDrawerItem().withName(headers[7]).withIcon(R.drawable.ic_info)
                 ).build();
     }
 
@@ -344,14 +324,14 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 GMFragment.clearPins();
                 break;
             case 5:
-//                mDrawerLayout.closeDrawer(mDrawerList);
-//                new PointSearcher(GMFragment.getMap(), this).showSearchDialog();
+                PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
+                pointSearcher.showSearchDialog();
                 break;
             case 6:
 //                removeAccountName();
 //                restartApp();
                 break;
-            case 8:
+            case 7:
                 new AboutInfoDialog(this).showDialogWindow();
                 break;
             default:
@@ -365,8 +345,8 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
                 .content(R.string.delete_markers_question)
-                .negativeColorRes(R.color.white)
-                .positiveColorRes(R.color.white)
+                .negativeColorRes(R.color.black)
+                .positiveColorRes(R.color.dark_blue)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {

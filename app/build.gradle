@@ -23,19 +23,23 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:22.1.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
     compile 'com.google.android.gms:play-services-maps:7.0.0'
-    //useful libs
+
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.afollestad:material-dialogs:0.7.2.7'
+    compile 'org.projectlombok:lombok:1.16.2'
+    //---------DI------------------------
+    compile 'com.google.dagger:dagger:2.0'
+    //---------EventBus------------------
+    compile 'de.greenrobot:eventbus:2.4.0'
+    //---------MaterialDesign------------
     compile 'com.github.rey5137:material:1.1.0'
-    compile('com.mikepenz.materialdrawer:library:2.8.2@aar') {
+    compile 'com.afollestad:material-dialogs:0.7.3.4'
+    compile('com.mikepenz.materialdrawer:library:2.9.2@aar') {
         transitive = true
     }
-    compile 'com.google.dagger:dagger:2.0'
-    compile 'de.greenrobot:eventbus:2.4.0'
-    // ---------------------------- lombok
-    compile 'org.projectlombok:lombok:1.16.2'
-
+    compile 'com.android.support:cardview-v7:22.1.0'
+    //--------Endpoints---------------
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.guava:guava:17.0'
     compile files('libs/google-api-client-1.16.0-rc.jar')
