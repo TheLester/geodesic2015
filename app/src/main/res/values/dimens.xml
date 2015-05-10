@@ -11,7 +11,10 @@
     <dimen name="marker_info_window_snippet">16sp</dimen>
     <dimen name="icon_menu_width">25dp</dimen>
 
+    <dimen name="size_tiny">5dp</dimen>
+    <dimen name="size_small">10dp</dimen>
     <dimen name="size_normal">10dp</dimen>
+    <dimen name="size_big">20dp</dimen>
     <dimen name="text_size_normal">18sp</dimen>
 
 </resources>

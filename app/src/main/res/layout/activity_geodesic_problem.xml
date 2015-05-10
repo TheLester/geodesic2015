@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/toolbar_layout"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/size_normal">
+
+            <TextView
+                android:id="@+id/tv_lat_one"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lat1"/>
+
+            <EditText
+                android:id="@+id/input_lat_one"
+                style="@style/problem_solving_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_lat_one"
+                android:layout_toRightOf="@id/tv_lat_one"
+                />
+
+            <TextView
+                android:id="@+id/tv_lon_one"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_lat_one"
+                android:text="@string/lon1"/>
+
+            <EditText
+                android:id="@+id/input_lon_one"
+                style="@style/problem_solving_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_lon_one"
+                android:layout_toRightOf="@id/tv_lon_one"
+                />
+
+
+            <TextView
+                android:id="@+id/tv_first_parameter"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_lon_one"/>
+
+            <EditText
+                android:id="@+id/input_first_parameter"
+                style="@style/problem_solving_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_first_parameter"
+                android:layout_toRightOf="@id/tv_first_parameter"
+                />
+
+
+            <TextView
+                android:id="@+id/tv_second_parameter"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_first_parameter"/>
+
+            <EditText
+                android:id="@+id/input_second_parameter"
+                style="@style/problem_solving_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_second_parameter"
+                android:layout_toRightOf="@id/tv_second_parameter"
+                />
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_below="@id/tv_second_parameter"
+                android:layout_marginTop="@dimen/size_big"
+                android:background="@drawable/separator"/>
+
+            <TextView
+                android:id="@+id/tv_name_answer_first"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/separator"
+                />
+
+            <TextView
+                android:id="@+id/tv_answer_first"
+                style="@style/problem_solving_textview_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_name_answer_first"
+                android:layout_toRightOf="@id/tv_name_answer_first"/>
+
+            <TextView
+                android:id="@+id/tv_name_answer_second"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_name_answer_first"
+                />
+
+            <TextView
+                android:id="@+id/tv_answer_second"
+                style="@style/problem_solving_textview_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_name_answer_second"
+                android:layout_toRightOf="@id/tv_name_answer_second"/>
+
+            <TextView
+                android:id="@+id/tv_name_answer_third"
+                style="@style/problem_solving_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_name_answer_second"
+                />
+
+            <TextView
+                android:id="@+id/tv_answer_third"
+                style="@style/problem_solving_textview_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv_name_answer_third"
+                android:layout_toRightOf="@id/tv_name_answer_third"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_big"
+                android:layout_below="@id/tv_name_answer_third"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <info.hoang8f.widget.FButton
+                    android:id="@+id/button_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_normal"
+                    android:text="@string/clear"
+                    android:textColor="@color/black"
+                    fbutton:buttonColor="@color/gray"
+                    fbutton:cornerRadius="@dimen/size_tiny"
+                    fbutton:shadowColor="@color/black"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="@dimen/size_tiny"
+                    />
+
+                <info.hoang8f.widget.FButton
+                    android:id="@+id/button_solve"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_normal"
+                    android:text="@string/solve"
+                    android:textColor="@color/white"
+                    fbutton:buttonColor="@color/light_blue"
+                    fbutton:cornerRadius="@dimen/size_tiny"
+                    fbutton:shadowColor="@color/blue"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="@dimen/size_tiny"
+                    />
+
+
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

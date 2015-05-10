@@ -28,7 +28,7 @@
     <string name="map_terrain">Terrain</string>
     <string name="map_normal">Normal</string>
     <string name="map_hybrid">Hybrid</string>
-    <string name="undirect_geodesic">Indirect Geodesic Problem</string>
+    <string name="indirect_geodesic">Indirect Geodesic Problem</string>
     <string name="direct_geodesic">Direct Geodesic Problem</string>
     <string name="drawer_open">Open Geodesic menu</string>
     <string name="drawer_close">Close Geodesic menu</string>
@@ -42,10 +42,12 @@
     <string name="lat2">Latitude2:</string>
     <string name="lon2">Longitude2:</string>
     <string name="azi">Azimuth1:</string>
+    <string name="azi2">Azimuth2:</string>
     <string name="dist">Distance:</string>
     <string name="result">Result:</string>
     <string name="nonres">No result</string>
     <string name="solve">Solve!</string>
+    <string name="clear">Clear</string>
     <string name="delete_markers">Delete markers</string>
     <string name="delete_markers_question">Do you really want to delete all markers?</string>
     <string name="ok">OK</string>

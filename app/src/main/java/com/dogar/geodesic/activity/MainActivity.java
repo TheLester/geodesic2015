@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
 import com.dogar.geodesic.dialog.PointSearcherDialog;
+import com.dogar.geodesic.enums.GeodesicProblemType;
 import com.dogar.geodesic.map.GoogleMapFragment;
 import com.dogar.geodesic.dialog.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
@@ -310,12 +311,10 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
 
         switch (position) {
             case 1:
-                Intent intentD = new Intent(this, DirectProblemActivity.class);
-                startActivity(intentD);
+                startProblemResolveActivity(GeodesicProblemType.DIRECT);
                 break;
             case 2:
-                Intent intentUnd = new Intent(this, IndirectProblemActivity.class);
-                startActivity(intentUnd);
+                startProblemResolveActivity(GeodesicProblemType.INDIRECT);
                 break;
             case 3:
                 openDeleteMarkersChooseDialog();
@@ -326,10 +325,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
             case 5:
                 PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
                 pointSearcher.showSearchDialog();
-                break;
-            case 6:
-//                removeAccountName();
-//                restartApp();
                 break;
             case 7:
                 new AboutInfoDialog(this).showDialogWindow();
@@ -358,5 +353,10 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         GMFragment.clearMarkersAndDrawNew();
                     }
                 }).show();
+    }
+    private void startProblemResolveActivity(GeodesicProblemType problem){
+        Intent intent = new Intent(this, GeodesicProblemActivity.class);
+        intent.putExtra(GEODESIC_PROBLEM,problem);
+        startActivity(intent);
     }
 }

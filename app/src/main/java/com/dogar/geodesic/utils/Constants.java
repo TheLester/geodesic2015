@@ -9,4 +9,6 @@ public abstract class Constants {
     public static final String WEB_CLIENT_ID = "274430009138-4f8ufdnqj56u9mrclvamdfdah9kujcs1.apps.googleusercontent.com";
     public static final String AUDIENCE      = "server:client_id:" + WEB_CLIENT_ID;
 
+    public static final String GEODESIC_PROBLEM = "geodesic_prolem";
+
 }
