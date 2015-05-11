@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus">
+        <item name="colorControlNormal">@color/light_blue</item>
+        <item name="colorControlActivated">@color/light_blue</item>
+        <item name="colorControlHighlight">@color/light_blue</item>
         <!-- improve animations -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>

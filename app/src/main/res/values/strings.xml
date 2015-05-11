@@ -56,5 +56,9 @@
     <string name="search">Search</string>
     <string name="dialog_search_location_title">Search a location</string>
     <string name="dialog_search_location_content">Ented a valid location name</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="edit_title_dialog">Type info about this point</string>
+    <string name="cant_be_empty">Can\'t be empty</string>
 
 </resources>

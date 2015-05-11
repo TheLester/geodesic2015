@@ -25,6 +25,7 @@ import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -82,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        toolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(toolbar);
+        initMenu();
         if (savedInstanceState != null) {
             return;
         }
@@ -91,10 +95,14 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         } else {
             chooseAccount();
         }
+    }
 
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
-        initMenu();
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        if(mOptionsMenu!=null){
+
+        }
     }
 
     @Override
@@ -165,12 +173,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         mOptionsMenu = menu;
         inflater.inflate(R.menu.main_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

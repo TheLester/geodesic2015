@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.dogar.geodesic.R;
 import com.dogar.geodesic.adapters.GeodesicInfoWindowAdapter;
+import com.dogar.geodesic.dialog.EditPointInfoDialog;
 import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
 import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
@@ -119,12 +120,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        drawMarkersFromLocal();
-    }
-
     public void onEvent(MapTypeChangedEvent mapTypeChangedEvent) {
         googleMap.setMapType(mapTypeChangedEvent.getMapType());
     }
@@ -140,6 +135,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         this.googleMap.setOnMapClickListener(this);
         this.googleMap.setOnMarkerClickListener(this);
         this.googleMap.setOnMarkerDragListener(this);
+        drawMarkersFromLocal();
     }
 
     @Override
@@ -350,31 +346,19 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     }
 
     private void openInputWindow(final Marker marker) {
+
+        String[] prefilledVals = new String[]{
+                marker.getTitle(), marker.getSnippet().split(DATE_DEF, 2)[0]
+        };
         Context context = getActivity();
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        AlertDialog.Builder alert = new AlertDialog.Builder(context);
-        alert.setTitle("Type info about this point");
-
-        final EditText inputTitle = new EditText(getActivity());
-        inputTitle.setText(marker.getTitle(), TextView.BufferType.EDITABLE);
-        layout.addView(inputTitle);
-
-        final EditText inputDescription = new EditText(context);
-        inputDescription.setText(marker.getSnippet().split(DATE_DEF, 2)[0],
-                TextView.BufferType.EDITABLE);
-        layout.addView(inputDescription);
-
-        alert.setView(layout);
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                String title = inputTitle.getText().toString();
-                String info = inputDescription.getText().toString();
+        EditPointInfoDialog editPointInfoDialog = new EditPointInfoDialog(context, prefilledVals, new EditPointInfoDialog.EditDoneListener() {
+            @Override
+            public void onEditDone(String title, String desc) {
                 marker.setTitle(title);
-                marker.setSnippet(info + DATE_DEF + new Date());
+                marker.setSnippet(desc + DATE_DEF + new Date());
                 ContentValues updateValues = new ContentValues();
                 updateValues.put(COLUMN_NAME_TITLE, title);
-                updateValues.put(COLUMN_NAME_INFO, info);
+                updateValues.put(COLUMN_NAME_INFO, desc);
                 updateValues.put(COLUMN_NAME_DATE_OF_INSERT,
                         new Date().getTime());
                 updateValues.put(COLUMN_NAME_DIRTY, TRUE);
@@ -382,14 +366,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
                 marker.showInfoWindow();
             }
         });
-
-        alert.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                    }
-                });
-        alert.show();
+        editPointInfoDialog.showDialog();
     }
-
-
 }

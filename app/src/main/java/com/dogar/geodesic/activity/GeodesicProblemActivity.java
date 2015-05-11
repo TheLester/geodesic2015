@@ -1,5 +1,6 @@
 package com.dogar.geodesic.activity;
 
+import com.andreabaccega.widget.FormEditText;
 import com.dogar.geodesic.R;
 import com.dogar.geodesic.enums.GeodesicProblemType;
 import com.dogar.geodesic.utils.ToastUtils;
@@ -21,20 +22,20 @@ import butterknife.OnClick;
 import static com.dogar.geodesic.utils.Constants.*;
 
 public class GeodesicProblemActivity extends AppCompatActivity {
-    @InjectView(R.id.main_toolbar)           Toolbar  toolbar;
-    @InjectView(R.id.input_lat_one)          EditText inputLatOne;
-    @InjectView(R.id.input_lon_one)          EditText inputLonOne;
-    @InjectView(R.id.tv_first_parameter)     TextView firstParamName;
-    @InjectView(R.id.input_first_parameter)  EditText firstParamInput;
-    @InjectView(R.id.tv_second_parameter)    TextView secondParamName;
-    @InjectView(R.id.input_second_parameter) EditText secondParamInput;
+    @InjectView(R.id.main_toolbar)           Toolbar      toolbar;
+    @InjectView(R.id.input_lat_one)          FormEditText inputLatOne;
+    @InjectView(R.id.input_lon_one)          FormEditText inputLonOne;
+    @InjectView(R.id.tv_first_parameter)     TextView     firstParamName;
+    @InjectView(R.id.input_first_parameter)  FormEditText firstParamInput;
+    @InjectView(R.id.tv_second_parameter)    TextView     secondParamName;
+    @InjectView(R.id.input_second_parameter) FormEditText secondParamInput;
     //resul
-    @InjectView(R.id.tv_name_answer_first)   TextView answerNameFirst;
-    @InjectView(R.id.tv_name_answer_second)  TextView answerNameSecond;
-    @InjectView(R.id.tv_name_answer_third)   TextView answerNameThird;
-    @InjectView(R.id.tv_answer_first)        TextView answerFirst;
-    @InjectView(R.id.tv_answer_second)       TextView answerSecond;
-    @InjectView(R.id.tv_answer_third)        TextView answerThird;
+    @InjectView(R.id.tv_name_answer_first)   TextView     answerNameFirst;
+    @InjectView(R.id.tv_name_answer_second)  TextView     answerNameSecond;
+    @InjectView(R.id.tv_name_answer_third)   TextView     answerNameThird;
+    @InjectView(R.id.tv_answer_first)        TextView     answerFirst;
+    @InjectView(R.id.tv_answer_second)       TextView     answerSecond;
+    @InjectView(R.id.tv_answer_third)        TextView     answerThird;
 
     private GeodesicProblemType currentProblemType;
 
@@ -85,7 +86,13 @@ public class GeodesicProblemActivity extends AppCompatActivity {
 
     @OnClick(R.id.button_solve)
     void solveClicked() {
-        solveProblem();
+        boolean isLatOneValid = inputLatOne.testValidity();
+        boolean isLonOneValid = inputLonOne.testValidity();
+        boolean isFirstParamValid = firstParamInput.testValidity();
+        boolean isSecondParamValid = secondParamInput.testValidity();
+        if (isLatOneValid && isLonOneValid && isFirstParamValid && isSecondParamValid) {
+            solveProblem();
+        }
     }
 
     private void solveProblem() {
