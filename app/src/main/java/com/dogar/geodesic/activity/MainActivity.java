@@ -18,7 +18,6 @@ package com.dogar.geodesic.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -26,6 +25,7 @@ import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,6 +40,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
 import com.dogar.geodesic.dialog.PointSearcherDialog;
 import com.dogar.geodesic.enums.GeodesicProblemType;
+import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
+import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
 import com.dogar.geodesic.map.GoogleMapFragment;
 import com.dogar.geodesic.dialog.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
@@ -59,6 +61,7 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 
 import static com.dogar.geodesic.utils.Constants.*;
 import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
@@ -66,11 +69,9 @@ import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
 public class MainActivity extends AppCompatActivity implements AccountHeader.OnAccountHeaderListener, Drawer.OnDrawerItemClickListener {
     @InjectView(R.id.main_toolbar) Toolbar toolbar;
 
-
-    private Menu mOptionsMenu;
-
-    private GoogleMapFragment GMFragment;
-    private Object            mSyncObserverHandle;
+    private EventBus bus = EventBus.getDefault();
+    private Menu   mOptionsMenu;
+    private Object mSyncObserverHandle;
 
     private AccountHeader.Result headerResult;
     private Drawer.Result        drawerResult;
@@ -81,6 +82,10 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        if (savedInstanceState != null) {
+            return;
+        }
+
         if (isLoggedIn(this)) {
             setGMFragment();
         } else {
@@ -174,22 +179,22 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         switch (item.getItemId()) {
             case R.id.delete_mode:
                 reverseCheck(item);
-                GMFragment.setDeleteMode(item.isChecked());
+              //  GMFragment.setDeleteMode(item.isChecked());
                 return true;
             case R.id.menu_refresh:
                 SyncUtils.TriggerRefresh();
                 return true;
             case R.id.map_terrain:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_TERRAIN));
                 return true;
             case R.id.map_normal:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_NORMAL));
                 return true;
             case R.id.map_hybrid:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_HYBRID));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -247,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                     if (accountName != null) {
                         saveLogin(this, accountName);
                         headerResult.setActiveProfile(getSavedProfile());
-                        setGMFragment();
+                        //setGMFragment();
                     }
                 }
                 break;
@@ -271,18 +276,15 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         .setActionView(R.layout.actionbar_indeterminate_progress);
             } else {
                 refreshItem.setActionView(null);
-                GMFragment.clearMarkersAndDrawNew();
+//                GMFragment.clearMarkersAndDrawNew();
             }
         }
     }
 
     private void setGMFragment() {
-        if (GMFragment == null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            GMFragment = new GoogleMapFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, GMFragment).commit();
-        }
+                    .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
     }
 
 
@@ -320,11 +322,11 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 openDeleteMarkersChooseDialog();
                 break;
             case 4:
-                GMFragment.clearPins();
+                //GMFragment.clearPins();
                 break;
             case 5:
-                PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
-                pointSearcher.showSearchDialog();
+              //  PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
+                //pointSearcher.showSearchDialog();
                 break;
             case 7:
                 new AboutInfoDialog(this).showDialogWindow();
@@ -350,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         getContentResolver().update(PointsContract.Entry.CONTENT_URI,
                                 newValues, SyncAdapter.ACCOUNT_FILTER,
                                 new String[]{getLoginEmail(MainActivity.this)});
-                        GMFragment.clearMarkersAndDrawNew();
+                     //   GMFragment.clearMarkersAndDrawNew();
                     }
                 }).show();
     }

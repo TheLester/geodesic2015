@@ -28,7 +28,6 @@ dependencies {
 
     compile 'info.hoang8f:fbutton:1.0.5'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'org.projectlombok:lombok:1.16.2'
     //---------DI------------------------
     compile 'com.google.dagger:dagger:2.0'
     //---------EventBus------------------
