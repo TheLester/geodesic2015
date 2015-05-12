@@ -76,7 +76,8 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
 
     private AccountHeader.Result headerResult;
     private Drawer.Result        drawerResult;
-    private ArrayList<IProfile> profiles = new ArrayList();
+    private ArrayList<IProfile> profiles      = new ArrayList();
+    private int                 selectedMapID = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +86,9 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         ButterKnife.inject(this);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
-        initMenu();
+        initDrawerMenu();
         if (savedInstanceState != null) {
+            selectedMapID = savedInstanceState.getInt(MENU_MAP_TYPE_SELECTED);
             return;
         }
 
@@ -98,11 +100,14 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        if(mOptionsMenu!=null){
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(MENU_MAP_TYPE_SELECTED, selectedMapID);
+        super.onSaveInstanceState(outState);
+    }
 
-        }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -132,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         return null;
     }
 
-    private void initMenu() {
+    private void initDrawerMenu() {
         if (profiles.isEmpty()) {
             initProfiles();
         }
@@ -172,30 +177,59 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         MenuInflater inflater = getMenuInflater();
         mOptionsMenu = menu;
         inflater.inflate(R.menu.main_activity_actions, menu);
+
+        if (selectedMapID == -1) {
+            return true;
+        }
+        MenuItem menuItem;
+
+        switch (selectedMapID) {
+            case R.id.map_terrain:
+                menuItem = menu.findItem(R.id.map_terrain);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_TERRAIN));
+                break;
+
+            case R.id.map_normal:
+                menuItem = menu.findItem(R.id.map_normal);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_NORMAL));
+                break;
+
+            case R.id.map_hybrid:
+                menuItem = menu.findItem(R.id.map_hybrid);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_HYBRID));
+                break;
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action buttons
-        switch (item.getItemId()) {
+        int id = item.getItemId();
+        switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
-              //  GMFragment.setDeleteMode(item.isChecked());
+                //  GMFragment.setDeleteMode(item.isChecked());
                 return true;
             case R.id.menu_refresh:
                 SyncUtils.TriggerRefresh();
                 return true;
             case R.id.map_terrain:
                 reverseCheck(item);
+                selectedMapID = id;
                 bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_TERRAIN));
                 return true;
             case R.id.map_normal:
                 reverseCheck(item);
+                selectedMapID = id;
                 bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_NORMAL));
                 return true;
             case R.id.map_hybrid:
                 reverseCheck(item);
+                selectedMapID = id;
                 bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_HYBRID));
                 return true;
             default:
@@ -261,6 +295,15 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         }
     }
 
+    private int getSelectedMapRadioButtonID(MenuItem[] items) {
+        for (MenuItem item : items) {
+            if (item.isChecked()) {
+                return item.getItemId();
+            }
+        }
+        return 0;
+    }
+
     private void chooseAccount() {
         Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{GOOGLE_TYPE},
                 false, null, null, null, null);
@@ -284,9 +327,9 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
     }
 
     private void setGMFragment() {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
     }
 
 
@@ -327,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 //GMFragment.clearPins();
                 break;
             case 5:
-              //  PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
+                //  PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
                 //pointSearcher.showSearchDialog();
                 break;
             case 7:
@@ -354,13 +397,14 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         getContentResolver().update(PointsContract.Entry.CONTENT_URI,
                                 newValues, SyncAdapter.ACCOUNT_FILTER,
                                 new String[]{getLoginEmail(MainActivity.this)});
-                     //   GMFragment.clearMarkersAndDrawNew();
+                        //   GMFragment.clearMarkersAndDrawNew();
                     }
                 }).show();
     }
-    private void startProblemResolveActivity(GeodesicProblemType problem){
+
+    private void startProblemResolveActivity(GeodesicProblemType problem) {
         Intent intent = new Intent(this, GeodesicProblemActivity.class);
-        intent.putExtra(GEODESIC_PROBLEM,problem);
+        intent.putExtra(GEODESIC_PROBLEM, problem);
         startActivity(intent);
     }
 }

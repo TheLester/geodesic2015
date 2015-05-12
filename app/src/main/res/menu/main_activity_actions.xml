@@ -31,7 +31,9 @@
         app:showAsAction="always"
         android:title="@string/action_settings">
         <menu>
-            <group android:checkableBehavior="single" >
+            <group
+                android:id="@+id/map_types_group"
+                android:checkableBehavior="single" >
                 <item
                     android:id="@+id/map_terrain"
                     android:orderInCategory="1"

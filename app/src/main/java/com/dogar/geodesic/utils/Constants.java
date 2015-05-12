@@ -10,5 +10,5 @@ public abstract class Constants {
     public static final String AUDIENCE      = "server:client_id:" + WEB_CLIENT_ID;
 
     public static final String GEODESIC_PROBLEM = "geodesic_prolem";
-
+    public final static String MENU_MAP_TYPE_SELECTED = "selected_map_type";
 }
