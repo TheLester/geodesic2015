@@ -19,11 +19,6 @@ package com.dogar.geodesic.sync;
 import android.content.ContentResolver;
 import android.os.Bundle;
 
-import com.dogar.geodesic.activity.MainActivity;
-
-
-
-
 
 /**
  * Static helper methods for working with the sync framework.

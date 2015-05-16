@@ -1,4 +1,4 @@
-package com.dogar.geodesic.activity;
+package com.dogar.geodesic.activities;
 
 import com.andreabaccega.widget.FormEditText;
 import com.dogar.geodesic.R;
@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import net.sf.geographiclib.Geodesic;

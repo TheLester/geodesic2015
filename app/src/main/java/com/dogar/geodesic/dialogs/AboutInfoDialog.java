@@ -1,14 +1,10 @@
-package com.dogar.geodesic.dialog;
+package com.dogar.geodesic.dialogs;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.widget.TextView;
 
 public class AboutInfoDialog {
     private Context context;

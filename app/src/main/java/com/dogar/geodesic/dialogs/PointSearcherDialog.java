@@ -1,8 +1,6 @@
-package com.dogar.geodesic.dialog;
+package com.dogar.geodesic.dialogs;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.text.TextUtils;

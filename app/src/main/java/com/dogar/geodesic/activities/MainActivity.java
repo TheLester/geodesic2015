@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.dogar.geodesic.activity;
+package com.dogar.geodesic.activities;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -25,7 +25,6 @@ import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,12 +38,12 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
-import com.dogar.geodesic.dialog.PointSearcherDialog;
+import com.dogar.geodesic.dialogs.PointSearcherDialog;
 import com.dogar.geodesic.enums.GeodesicProblemType;
 import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
 import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
-import com.dogar.geodesic.map.GoogleMapFragment;
-import com.dogar.geodesic.dialog.AboutInfoDialog;
+import com.dogar.geodesic.fragments.GoogleMapFragment;
+import com.dogar.geodesic.dialogs.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
@@ -367,11 +366,11 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 openDeleteMarkersChooseDialog();
                 break;
             case 4:
-                //GMFragment.clearPins();
+                EventBus.getDefault().post(new EventsWithoutParams.ClearPinsEvent());
                 break;
             case 5:
-                //  PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
-                //pointSearcher.showSearchDialog();
+                PointSearcherDialog pointSearcher = new PointSearcherDialog(null,this);
+                pointSearcher.showSearchDialog();
                 break;
             case 7:
                 new AboutInfoDialog(this).showDialogWindow();
@@ -397,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         getContentResolver().update(PointsContract.Entry.CONTENT_URI,
                                 newValues, SyncAdapter.ACCOUNT_FILTER,
                                 new String[]{getLoginEmail(MainActivity.this)});
-                        //   GMFragment.clearMarkersAndDrawNew();
+                                EventBus.getDefault().post(new EventsWithoutParams.DeleteMarkersEvent());
                     }
                 }).show();
     }
