@@ -25,6 +25,7 @@ import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
+import com.dogar.geodesic.dialogs.DeleteMarkersDialog;
 import com.dogar.geodesic.dialogs.PointSearcherDialog;
 import com.dogar.geodesic.enums.GeodesicProblemType;
 import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
@@ -211,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
-                //  GMFragment.setDeleteMode(item.isChecked());
                 return true;
             case R.id.menu_refresh:
                 SyncUtils.TriggerRefresh();
@@ -294,15 +295,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         }
     }
 
-    private int getSelectedMapRadioButtonID(MenuItem[] items) {
-        for (MenuItem item : items) {
-            if (item.isChecked()) {
-                return item.getItemId();
-            }
-        }
-        return 0;
-    }
-
     private void chooseAccount() {
         Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{GOOGLE_TYPE},
                 false, null, null, null, null);
@@ -363,43 +355,25 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 startProblemResolveActivity(GeodesicProblemType.INDIRECT);
                 break;
             case 3:
-                openDeleteMarkersChooseDialog();
+                DeleteMarkersDialog deleteMarkersDialog = DeleteMarkersDialog.create();
+                deleteMarkersDialog.show(getSupportFragmentManager(), DeleteMarkersDialog.TAG);
                 break;
             case 4:
                 EventBus.getDefault().post(new EventsWithoutParams.ClearPinsEvent());
                 break;
             case 5:
-                PointSearcherDialog pointSearcher = new PointSearcherDialog(null,this);
-                pointSearcher.showSearchDialog();
+                PointSearcherDialog searchFragment = PointSearcherDialog.create();
+                searchFragment.show(getSupportFragmentManager(), PointSearcherDialog.TAG);
                 break;
             case 7:
-                new AboutInfoDialog(this).showDialogWindow();
+                AboutInfoDialog aboutFragment = AboutInfoDialog.create();
+                aboutFragment.show(getSupportFragmentManager(), AboutInfoDialog.TAG);
                 break;
             default:
                 break;
         }
     }
 
-    private void openDeleteMarkersChooseDialog() {
-        MaterialDialog materialDialog = new MaterialDialog.Builder(this).title(R.string.delete_markers).
-                icon(getResources().getDrawable(R.drawable.ic_del)).
-                positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
-                .content(R.string.delete_markers_question)
-                .negativeColorRes(R.color.black)
-                .positiveColorRes(R.color.dark_blue)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        ContentValues newValues = new ContentValues();
-                        newValues.put(PointsContract.Entry.COLUMN_NAME_DELETE, 1);
-                        getContentResolver().update(PointsContract.Entry.CONTENT_URI,
-                                newValues, SyncAdapter.ACCOUNT_FILTER,
-                                new String[]{getLoginEmail(MainActivity.this)});
-                                EventBus.getDefault().post(new EventsWithoutParams.DeleteMarkersEvent());
-                    }
-                }).show();
-    }
 
     private void startProblemResolveActivity(GeodesicProblemType problem) {
         Intent intent = new Intent(this, GeodesicProblemActivity.class);

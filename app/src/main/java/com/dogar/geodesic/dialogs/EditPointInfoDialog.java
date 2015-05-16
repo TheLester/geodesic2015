@@ -67,8 +67,4 @@ public class EditPointInfoDialog extends DialogFragment {
         return dialog;
     }
 
-    public interface EditDoneListener {
-        void onEditDone(String title, String desc);
-    }
-
 }

@@ -27,9 +27,11 @@ import com.dogar.geodesic.adapters.GeodesicInfoWindowAdapter;
 import com.dogar.geodesic.dialogs.EditPointInfoDialog;
 import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
 import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
+import com.dogar.geodesic.eventbus.event.MoveMapCameraEvent;
 import com.dogar.geodesic.eventbus.event.PointInfoEditedEvent;
 import com.dogar.geodesic.model.GeoPoint;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -150,6 +152,16 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     }
 
     /**
+     * Called when got event for moving camera by specific LatLng
+     *
+     * @param moveMapCameraEvent
+     */
+    public void onEvent(MoveMapCameraEvent moveMapCameraEvent) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(moveMapCameraEvent.getPoint(), 15));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+    }
+
+    /**
      * Called when user clicks to delete all markers
      *
      * @param deleteMarkersEvent
@@ -165,6 +177,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
 
     /**
      * Called when user clicks to delete all pins/polygons
+     *
      * @param clearPinsEvent
      */
     public void onEvent(EventsWithoutParams.ClearPinsEvent clearPinsEvent) {
