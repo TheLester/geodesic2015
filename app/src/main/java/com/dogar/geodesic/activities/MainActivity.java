@@ -20,6 +20,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
@@ -49,6 +50,7 @@ import com.dogar.geodesic.dialogs.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
+import com.dogar.geodesic.utils.AccountUtils;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
@@ -125,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         Account[] accounts = AccountManager.get(this).getAccountsByType(GOOGLE_TYPE);
         for (Account account : accounts) {
             profiles.add(new ProfileDrawerItem().withEmail(account.name));
-            Log.i("test", account.name);
         }
     }
 
@@ -215,10 +216,10 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
-                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(),this);
+                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(), this);
                 return true;
             case R.id.menu_refresh:
-                SyncUtils.TriggerRefresh();
+                SyncUtils.triggerRefresh(this);
                 return true;
             case R.id.map_terrain:
                 reverseCheck(item);
@@ -291,7 +292,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                     if (accountName != null) {
                         saveLogin(this, accountName);
                         headerResult.setActiveProfile(getSavedProfile());
-                        //setGMFragment();
                     }
                 }
                 break;
@@ -335,13 +335,12 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    Context context = MainActivity.this;
                     @SuppressWarnings("deprecation")
                     SyncInfo currentSync = ContentResolver.getCurrentSync();
-//                    setRefreshActionButtonState(currentSync != null
-//                            && currentSync.account.equals(credential
-//                            .getSelectedAccount())
-//                            && currentSync.authority.equals(AUTHORITY));
+                    setRefreshActionButtonState(currentSync != null
+                            && currentSync.account.equals(AccountUtils.getAccount(context, getLoginEmail(context)))
+                            && currentSync.authority.equals(AUTHORITY));
                 }
             });
         }

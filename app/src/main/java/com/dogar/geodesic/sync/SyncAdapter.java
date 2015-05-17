@@ -75,7 +75,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority,
 			ContentProviderClient provider, SyncResult syncResult) {
 		this.account = account;
-		//updateLocalFeedData(syncResult);
+		updateLocalFeedData(syncResult);
 
 	}
 
@@ -212,7 +212,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		// sure you set
 		// syncToNetwork=false in the line above to prevent duplicate syncs.
 
-		// Add new items
 
 	}
 

@@ -17,7 +17,11 @@
 package com.dogar.geodesic.sync;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Bundle;
+
+import com.dogar.geodesic.utils.AccountUtils;
+import com.dogar.geodesic.utils.SharedPreferencesUtils;
 
 
 /**
@@ -25,15 +29,15 @@ import android.os.Bundle;
  */
 public class SyncUtils {
 
-    public static void TriggerRefresh() {
+    public static void triggerRefresh(Context context) {
         Bundle b = new Bundle();
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        
-//        ContentResolver.requestSync(
-//                MainActivity.getCredential().getSelectedAccount(),      // Sync account
-//                PointsContract.CONTENT_AUTHORITY, // Content authority
-//                b);                                      // Extras
+
+        ContentResolver.requestSync(
+                AccountUtils.getAccount(context, SharedPreferencesUtils.getLoginEmail(context)),      // Sync account
+                PointsContract.CONTENT_AUTHORITY, // Content authority
+                b);                                      // Extras
     }
 }
