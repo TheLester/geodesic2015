@@ -65,15 +65,14 @@ import static com.dogar.geodesic.utils.Constants.*;
  */
 public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, OnMapLongClickListener {
-    private final String PERIMETER     = "Perimeter:";
-    private final String AREA          = "Area:";
-    private final String METERS        = " meters";
-    private final String IN_SQUARE     = "^2";
-    private final String LATITUDE      = "Lat.:";
-    private final String LONGITUDE     = "Lon.:";
-    private final String DATE_DEF      = "\n--------\nInfo added at ";
-    private final String DEFAULT_TITLE = "Title";
-    private final String DEFAULT_DESCR = "Description";
+    private final String PERIMETER = "Perimeter:";
+    private final String AREA      = "Area:";
+    private final String METERS    = " meters";
+    private final String IN_SQUARE = "^2";
+    private final String LATITUDE  = "Lat.:";
+    private final String LONGITUDE = "Lon.:";
+    private final String DATE_DEF  = "\n--------\nInfo added at ";
+
 
     private final PolygonArea   polygonArea      = new PolygonArea(Geodesic.WGS84,
             false);
@@ -248,8 +247,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     public void onMapClick(LatLng point) {
         long timeNow = DateTime.now().getMillis();
         GeoPoint geoPoint = new GeoPoint(
-                DEFAULT_TITLE,
-                DEFAULT_DESCR,
+                getString(R.string.title),
+                getString(R.string.description),
                 timeNow,
                 SQLITE_FALSE,
                 SQLITE_FALSE,
@@ -259,7 +258,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
 
         getActivity().getContentResolver().insert(CONTENT_URI,
                 geoPoint.toCVWithoutId());
-        drawMarker(point, DEFAULT_TITLE, DEFAULT_DESCR, timeNow);
+        drawMarker(geoPoint);
     }
 
     @Override
@@ -289,8 +288,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
-        latitudeLabel.setText(LATITUDE);
-        longitudeLabel.setText(LONGITUDE);
         ContentValues updateValues = new ContentValues();
         updateValues.put(COLUMN_NAME_LATITUDE,
                 String.valueOf(marker.getPosition().latitude));
@@ -317,31 +314,27 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         Cursor c = getActivity().getContentResolver().query(CONTENT_URI,
                 PROJECTION, ACCOUNT_FILTER, new String[]{accountName}, null);
         while (c.moveToNext()) {
-            Double latitude = Double.valueOf(c.getString(COLUMN_LATITUDE));
-            Double longitude = Double.valueOf(c.getString(COLUMN_LONGITUDE));
-            long dateOfInsert = c.getLong(COLUMN_DATE_OF_INSERT);
-            String title = c.getString(COLUMN_TITLE);
-            String info = c.getString(COLUMN_INFO);
-            boolean isDeleted = (c.getInt(COLUMN_DELETE) == SQLITE_TRUE);
+            GeoPoint geoPoint = new GeoPoint(c);
+            boolean isDeleted = (geoPoint.getDeleted() == SQLITE_TRUE);
             if (!isDeleted) {
-                drawMarker(new LatLng(latitude, longitude), title, info,
-                        dateOfInsert);
+                drawMarker(geoPoint);
             }
         }
     }
 
-    private void drawMarker(LatLng point, String title, String info, long dateTime) {
+    private void drawMarker(GeoPoint geoPoint) {
         MarkerOptions markerOptions = new MarkerOptions();
         BitmapDescriptor icon = BitmapDescriptorFactory
                 .fromResource(R.drawable.ic_marker);
-        markerOptions.position(point);
+        LatLng position = new LatLng(Double.valueOf(geoPoint.getLatitude()), Double.valueOf(geoPoint.getLongitude()));
+        markerOptions.position(position);
         markerOptions.draggable(true);
         markerOptions.icon(icon);
-        markerOptions.title(title);
-        markerOptions.snippet(info + DATE_DEF + getNowDateTime(dateTime));
+        markerOptions.title(geoPoint.getTitle());
+        markerOptions.snippet(geoPoint.getInfo() + DATE_DEF + getNowDateTime(geoPoint.getInsertDate()));
         Marker newMarker = googleMap.addMarker(markerOptions);
         points.add(newMarker);
-        tableOfPreviousPositions.put(newMarker, point);
+        tableOfPreviousPositions.put(newMarker, position);
     }
 
     private void drawPinPolygon(LatLng point) {
@@ -388,7 +381,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         if (this.polygonOptions == null) {
             this.polygonOptions = new PolygonOptions().strokeColor(Color.RED)
                     .strokeWidth(2.0f)
-                    .fillColor(Color.argb(127, 139, 137, 137)).geodesic(true);
+                    .fillColor(getActivity().getResources().getColor(R.color.gray_light)).geodesic(true);
         }
     }
 
