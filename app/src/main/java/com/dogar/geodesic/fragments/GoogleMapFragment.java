@@ -1,7 +1,6 @@
 package com.dogar.geodesic.fragments;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,6 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -95,9 +92,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
 
     private String accountName;
     private int    pinCounter;
-    private LatLng bufferPoint = new LatLng(0, 0);
-
-    private Marker selectedMarker;
+    private LatLng bufferPolygonPoint = new LatLng(0, 0);
+    private LatLng bufferSelectedMarkerPos;
 
     public static GoogleMapFragment newInstance() {
         return new GoogleMapFragment();
@@ -136,6 +132,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     public void onDestroyView() {
         super.onDestroyView();
         clearPins();
+        points.clear();
         ButterKnife.reset(this);
     }
 
@@ -156,7 +153,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     @Override
     public void onInfoWindowClick(Marker marker) {
         openInputDialog(marker);
-        selectedMarker = marker;
+        bufferSelectedMarkerPos = marker.getPosition();
     }
 
     /**
@@ -206,7 +203,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         polygonOptions = null;
         pinOptions = null;
         pinCounter = 0;
-        bufferPoint = new LatLng(0, 0);
+        bufferPolygonPoint = new LatLng(0, 0);
         pointsOfPolygons.clear();
         areaLabel.setText(getString(R.string.area_empty));
         perimeterLabel.setText(getString(R.string.perimeter_empty));
@@ -227,12 +224,15 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
      * @param editDoneEvent
      */
     public void onEvent(PointInfoEditedEvent editDoneEvent) {
+        Marker selectedMarker = getMarkerByPos(bufferSelectedMarkerPos);
         if (selectedMarker != null) {
+            long dateNowInMs = DateTime.now().getMillis();
             selectedMarker.setTitle(editDoneEvent.getPointTitle());
-            selectedMarker.setSnippet(editDoneEvent.getPointInfo());
+            selectedMarker.setSnippet(editDoneEvent.getPointInfo() + DATE_DEF + getNowDateTime(dateNowInMs));
+            selectedMarker.hideInfoWindow();
             selectedMarker.showInfoWindow();
             LatLng position = selectedMarker.getPosition();
-            GeoPoint updatedPoint = new GeoPoint(selectedMarker.getTitle(), selectedMarker.getSnippet(), DateTime.now().getMillis(),
+            GeoPoint updatedPoint = new GeoPoint(editDoneEvent.getPointTitle(), editDoneEvent.getPointInfo(), dateNowInMs,
                     SQLITE_TRUE,
                     SQLITE_FALSE,
                     String.valueOf(position.latitude),
@@ -305,6 +305,13 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         drawPinPolygon(latLng);
     }
 
+    private Marker getMarkerByPos(LatLng pos) {
+        for (Marker marker : points) {
+            if (marker.getPosition().equals(pos)) return marker;
+        }
+        return null;
+    }
+
     private SupportMapFragment getMapFragment() {
         FragmentManager fm = getChildFragmentManager();
         return (SupportMapFragment) fm.findFragmentById(R.id.map);
@@ -357,12 +364,12 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
                     + METERS);
         } else if (pinCounter == 2) {
             perimeterLabel.setText(PERIMETER
-                    + Math.round(Geodesic.WGS84.Inverse(bufferPoint.latitude,
-                    bufferPoint.longitude, point.latitude,
+                    + Math.round(Geodesic.WGS84.Inverse(bufferPolygonPoint.latitude,
+                    bufferPolygonPoint.longitude, point.latitude,
                     point.longitude).s12) + METERS);
-            bufferPoint = point;
+            bufferPolygonPoint = point;
         } else if (pinCounter == 1) {
-            bufferPoint = point;
+            bufferPolygonPoint = point;
         }
     }
 
