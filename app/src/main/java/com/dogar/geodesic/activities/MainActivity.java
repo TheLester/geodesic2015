@@ -49,6 +49,7 @@ import com.dogar.geodesic.dialogs.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
+import com.dogar.geodesic.utils.SharedPreferencesUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
 import com.mikepenz.materialdrawer.Drawer;
@@ -178,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         MenuInflater inflater = getMenuInflater();
         mOptionsMenu = menu;
         inflater.inflate(R.menu.main_activity_actions, menu);
-
+        MenuItem delModeCheckbox = menu.findItem(R.id.delete_mode);
+        delModeCheckbox.setChecked(SharedPreferencesUtils.isDeleteMode(this));
         if (selectedMapID == -1) {
             return true;
         }
@@ -213,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
+                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(),this);
                 return true;
             case R.id.menu_refresh:
                 SyncUtils.TriggerRefresh();

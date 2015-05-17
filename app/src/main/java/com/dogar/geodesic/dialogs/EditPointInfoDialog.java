@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andreabaccega.widget.FormEditText;
@@ -64,6 +66,7 @@ public class EditPointInfoDialog extends DialogFragment {
         descrInput = ButterKnife.findById(dialog, R.id.input_description);
         titleInput.setText(getArguments().getString(TITLE_DIALOG));
         descrInput.setText(getArguments().getString(INFO_DIALOG));
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return dialog;
     }
 

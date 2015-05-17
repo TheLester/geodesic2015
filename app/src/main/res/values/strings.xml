@@ -60,5 +60,7 @@
     <string name="description">Description</string>
     <string name="edit_title_dialog">Type info about this point</string>
     <string name="cant_be_empty">Can\'t be empty</string>
+    <string name="area_empty">Area:0 meters^2</string>
+    <string name="perimeter_empty">Perimeter:0 meters</string>
 
 </resources>

@@ -9,21 +9,21 @@
     <com.andreabaccega.widget.FormEditText
         android:id="@+id/input_title"
         android:layout_width="match_parent"
-        android:singleLine="true"
-        android:imeOptions="actionNext"
-        app:emptyErrorString="@string/cant_be_empty"
-        android:hint="@string/title"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/size_normal"/>
+        android:layout_margin="@dimen/size_normal"
+        android:hint="@string/title"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        app:emptyErrorString="@string/cant_be_empty"/>
 
     <com.andreabaccega.widget.FormEditText
         android:id="@+id/input_description"
         android:layout_width="match_parent"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
-        app:emptyErrorString="@string/cant_be_empty"
-        android:hint="@string/description"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/size_normal"/>
+        android:layout_margin="@dimen/size_normal"
+        android:hint="@string/description"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
+        app:emptyErrorString="@string/cant_be_empty"/>
 
 </LinearLayout>

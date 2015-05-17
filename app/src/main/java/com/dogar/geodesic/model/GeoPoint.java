@@ -35,4 +35,5 @@ public class GeoPoint {
         cv.put(COLUMN_NAME_ACCOUNT, accountName);
         return cv;
     }
+
 }

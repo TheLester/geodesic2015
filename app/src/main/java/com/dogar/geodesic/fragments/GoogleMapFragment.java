@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dogar.geodesic.R;
@@ -45,6 +46,8 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -83,17 +86,17 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     private PolygonOptions polygonOptions;
     private MarkerOptions  pinOptions;
 
-    @InjectView(R.id.area_info)      TextView areaLabel;
-    @InjectView(R.id.perim_info)     TextView perimeterLabel;
-    @InjectView(R.id.latitude_info)  TextView latitudeLabel;
-    @InjectView(R.id.longitude_info) TextView longitudeLabel;
+    @InjectView(R.id.area_info)      TextView       areaLabel;
+    @InjectView(R.id.perim_info)     TextView       perimeterLabel;
+    @InjectView(R.id.latitude_info)  TextView       latitudeLabel;
+    @InjectView(R.id.longitude_info) TextView       longitudeLabel;
+    @InjectView(R.id.coord_panel)    RelativeLayout coordPanel;
 
     private GoogleMap googleMap;
 
     private String accountName;
     private int    pinCounter;
     private LatLng bufferPoint = new LatLng(0, 0);
-    private boolean isDeleteMode;
 
     private Marker selectedMarker;
 
@@ -130,6 +133,12 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        clearPins();
+        ButterKnife.reset(this);
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -181,6 +190,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
      * @param clearPinsEvent
      */
     public void onEvent(EventsWithoutParams.ClearPinsEvent clearPinsEvent) {
+        clearPins();
+    }
+
+    private void clearPins() {
         for (Marker pin : pins) {
             pin.remove();
         }
@@ -196,8 +209,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         pinCounter = 0;
         bufferPoint = new LatLng(0, 0);
         pointsOfPolygons.clear();
-        areaLabel.setText(AREA + 0 + METERS + IN_SQUARE);
-        perimeterLabel.setText(PERIMETER + 0 + METERS);
+        areaLabel.setText(getString(R.string.area_empty));
+        perimeterLabel.setText(getString(R.string.perimeter_empty));
     }
 
     /**
@@ -217,7 +230,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     public void onEvent(PointInfoEditedEvent editDoneEvent) {
         if (selectedMarker != null) {
             selectedMarker.setTitle(editDoneEvent.getPointTitle());
-            selectedMarker.setSnippet(editDoneEvent.getPointInfo() + DATE_DEF + new Date());
+            selectedMarker.setSnippet(editDoneEvent.getPointInfo());
             selectedMarker.showInfoWindow();
             LatLng position = selectedMarker.getPosition();
             GeoPoint updatedPoint = new GeoPoint(selectedMarker.getTitle(), selectedMarker.getSnippet(), DateTime.now().getMillis(),
@@ -253,7 +266,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     public boolean onMarkerClick(Marker marker) {
         if (pins.contains(marker))
             return true;
-        if (isDeleteMode) {
+        if (SharedPreferencesUtils.isDeleteMode(getActivity())) {
             deletePoint(marker);
             tableOfPreviousPositions.remove(marker);
             marker.remove();
@@ -264,7 +277,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onMarkerDragStart(Marker marker) {
-        //TODO nothing
+        coordPanel.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -287,16 +300,12 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         updatePoint(updateValues, tableOfPreviousPositions.get(marker));
         tableOfPreviousPositions.put(marker, marker.getPosition());
         marker.showInfoWindow();
+        coordPanel.setVisibility(View.GONE);
     }
 
     @Override
     public void onMapLongClick(LatLng latLng) {
         drawPinPolygon(latLng);
-    }
-
-
-    public void setDeleteMode(boolean isDeleteMode) {
-        this.isDeleteMode = isDeleteMode;
     }
 
     private SupportMapFragment getMapFragment() {
@@ -329,7 +338,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         markerOptions.draggable(true);
         markerOptions.icon(icon);
         markerOptions.title(title);
-        markerOptions.snippet(info + DATE_DEF + new DateTime(dateTime));
+        markerOptions.snippet(info + DATE_DEF + getNowDateTime(dateTime));
         Marker newMarker = googleMap.addMarker(markerOptions);
         points.add(newMarker);
         tableOfPreviousPositions.put(newMarker, point);
@@ -407,5 +416,9 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     private void openInputDialog(final Marker marker) {
         DialogFragment newFragment = EditPointInfoDialog.create(marker.getTitle(), marker.getSnippet().split(DATE_DEF, 2)[0], marker.getPosition());
         newFragment.show(getFragmentManager(), EditPointInfoDialog.TAG);
+    }
+
+    private String getNowDateTime(long ms) {
+        return new DateTime(ms).toString("dd-MMM-yy hh:mm:ss aa ZZ");
     }
 }
