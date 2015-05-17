@@ -23,7 +23,6 @@ import android.util.Log;
 import com.dogar.geodesic.CloudEndpointUtils;
 import com.dogar.geodesic.geopointinfoendpoint.Geopointinfoendpoint;
 import com.dogar.geodesic.geopointinfoendpoint.model.GeoPointInfo;
-import com.dogar.geodesic.activity.MainActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.jackson.JacksonFactory;

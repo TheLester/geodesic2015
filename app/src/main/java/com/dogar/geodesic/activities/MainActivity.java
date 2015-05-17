@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.dogar.geodesic.activity;
+package com.dogar.geodesic.activities;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -26,6 +25,8 @@ import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,13 +39,17 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
-import com.dogar.geodesic.dialog.PointSearcherDialog;
+import com.dogar.geodesic.dialogs.DeleteMarkersDialog;
+import com.dogar.geodesic.dialogs.PointSearcherDialog;
 import com.dogar.geodesic.enums.GeodesicProblemType;
-import com.dogar.geodesic.map.GoogleMapFragment;
-import com.dogar.geodesic.dialog.AboutInfoDialog;
+import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
+import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
+import com.dogar.geodesic.fragments.GoogleMapFragment;
+import com.dogar.geodesic.dialogs.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
+import com.dogar.geodesic.utils.SharedPreferencesUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
 import com.mikepenz.materialdrawer.Drawer;
@@ -59,6 +64,7 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 
 import static com.dogar.geodesic.utils.Constants.*;
 import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
@@ -66,30 +72,44 @@ import static com.dogar.geodesic.utils.SharedPreferencesUtils.*;
 public class MainActivity extends AppCompatActivity implements AccountHeader.OnAccountHeaderListener, Drawer.OnDrawerItemClickListener {
     @InjectView(R.id.main_toolbar) Toolbar toolbar;
 
-
-    private Menu mOptionsMenu;
-
-    private GoogleMapFragment GMFragment;
-    private Object            mSyncObserverHandle;
+    private EventBus bus = EventBus.getDefault();
+    private Menu   mOptionsMenu;
+    private Object mSyncObserverHandle;
 
     private AccountHeader.Result headerResult;
     private Drawer.Result        drawerResult;
-    private ArrayList<IProfile> profiles = new ArrayList();
+    private ArrayList<IProfile> profiles      = new ArrayList();
+    private int                 selectedMapID = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        toolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(toolbar);
+        initDrawerMenu();
+        if (savedInstanceState != null) {
+            selectedMapID = savedInstanceState.getInt(MENU_MAP_TYPE_SELECTED);
+            return;
+        }
+
         if (isLoggedIn(this)) {
             setGMFragment();
         } else {
             chooseAccount();
         }
+    }
 
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
-        initMenu();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(MENU_MAP_TYPE_SELECTED, selectedMapID);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -119,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         return null;
     }
 
-    private void initMenu() {
+    private void initDrawerMenu() {
         if (profiles.isEmpty()) {
             initProfiles();
         }
@@ -159,37 +179,61 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         MenuInflater inflater = getMenuInflater();
         mOptionsMenu = menu;
         inflater.inflate(R.menu.main_activity_actions, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+        MenuItem delModeCheckbox = menu.findItem(R.id.delete_mode);
+        delModeCheckbox.setChecked(SharedPreferencesUtils.isDeleteMode(this));
+        if (selectedMapID == -1) {
+            return true;
+        }
+        MenuItem menuItem;
 
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
+        switch (selectedMapID) {
+            case R.id.map_terrain:
+                menuItem = menu.findItem(R.id.map_terrain);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_TERRAIN));
+                break;
+
+            case R.id.map_normal:
+                menuItem = menu.findItem(R.id.map_normal);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_NORMAL));
+                break;
+
+            case R.id.map_hybrid:
+                menuItem = menu.findItem(R.id.map_hybrid);
+                menuItem.setChecked(true);
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_HYBRID));
+                break;
+        }
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action buttons
-        switch (item.getItemId()) {
+        int id = item.getItemId();
+        switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
-                GMFragment.setDeleteMode(item.isChecked());
+                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(),this);
                 return true;
             case R.id.menu_refresh:
                 SyncUtils.TriggerRefresh();
                 return true;
             case R.id.map_terrain:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                selectedMapID = id;
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_TERRAIN));
                 return true;
             case R.id.map_normal:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                selectedMapID = id;
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_NORMAL));
                 return true;
             case R.id.map_hybrid:
                 reverseCheck(item);
-                GMFragment.getMap().setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                selectedMapID = id;
+                bus.post(new MapTypeChangedEvent(GoogleMap.MAP_TYPE_HYBRID));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -247,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                     if (accountName != null) {
                         saveLogin(this, accountName);
                         headerResult.setActiveProfile(getSavedProfile());
-                        setGMFragment();
+                        //setGMFragment();
                     }
                 }
                 break;
@@ -271,18 +315,15 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         .setActionView(R.layout.actionbar_indeterminate_progress);
             } else {
                 refreshItem.setActionView(null);
-                GMFragment.clearMarkersAndDrawNew();
+//                GMFragment.clearMarkersAndDrawNew();
             }
         }
     }
 
     private void setGMFragment() {
-        if (GMFragment == null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            GMFragment = new GoogleMapFragment();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, GMFragment).commit();
-        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
     }
 
 
@@ -317,46 +358,29 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                 startProblemResolveActivity(GeodesicProblemType.INDIRECT);
                 break;
             case 3:
-                openDeleteMarkersChooseDialog();
+                DeleteMarkersDialog deleteMarkersDialog = DeleteMarkersDialog.create();
+                deleteMarkersDialog.show(getSupportFragmentManager(), DeleteMarkersDialog.TAG);
                 break;
             case 4:
-                GMFragment.clearPins();
+                EventBus.getDefault().post(new EventsWithoutParams.ClearPinsEvent());
                 break;
             case 5:
-                PointSearcherDialog pointSearcher = new PointSearcherDialog(GMFragment.getMap(),this);
-                pointSearcher.showSearchDialog();
+                PointSearcherDialog searchFragment = PointSearcherDialog.create();
+                searchFragment.show(getSupportFragmentManager(), PointSearcherDialog.TAG);
                 break;
             case 7:
-                new AboutInfoDialog(this).showDialogWindow();
+                AboutInfoDialog aboutFragment = AboutInfoDialog.create();
+                aboutFragment.show(getSupportFragmentManager(), AboutInfoDialog.TAG);
                 break;
             default:
                 break;
         }
     }
 
-    private void openDeleteMarkersChooseDialog() {
-        MaterialDialog materialDialog = new MaterialDialog.Builder(this).title(R.string.delete_markers).
-                icon(getResources().getDrawable(R.drawable.ic_del)).
-                positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
-                .content(R.string.delete_markers_question)
-                .negativeColorRes(R.color.black)
-                .positiveColorRes(R.color.dark_blue)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        ContentValues newValues = new ContentValues();
-                        newValues.put(PointsContract.Entry.COLUMN_NAME_DELETE, 1);
-                        getContentResolver().update(PointsContract.Entry.CONTENT_URI,
-                                newValues, SyncAdapter.ACCOUNT_FILTER,
-                                new String[]{getLoginEmail(MainActivity.this)});
-                        GMFragment.clearMarkersAndDrawNew();
-                    }
-                }).show();
-    }
-    private void startProblemResolveActivity(GeodesicProblemType problem){
+
+    private void startProblemResolveActivity(GeodesicProblemType problem) {
         Intent intent = new Intent(this, GeodesicProblemActivity.class);
-        intent.putExtra(GEODESIC_PROBLEM,problem);
+        intent.putExtra(GEODESIC_PROBLEM, problem);
         startActivity(intent);
     }
 }

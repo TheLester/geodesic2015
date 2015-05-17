@@ -30,7 +30,7 @@
     <item name="text_background_on_map" type="color">#FFFFFF</item>
 
     <color name="black_overlay">#66000000</color>
-
+    <color name="gray_light">#ffb4b4b4</color>
     <color name="ligh_green">#ff30ae65</color>
     <color name="dark_blue">#ff252f5e</color>
     <color name="light_blue">#ff505dd1</color>

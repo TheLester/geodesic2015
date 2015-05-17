@@ -9,34 +9,36 @@ import com.dogar.geodesic.R;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 
+import butterknife.ButterKnife;
+
 public class GeodesicInfoWindowAdapter implements InfoWindowAdapter {
-	private LayoutInflater inflater;
+    private LayoutInflater inflater;
 
-	public GeodesicInfoWindowAdapter(Context context) {
-		inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
+    public GeodesicInfoWindowAdapter(Context context) {
+        inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-	@Override
-	public View getInfoContents(Marker marker) {
-		// Getting view from the layout file
-		View v = inflater.inflate(R.layout.custom_info_contents, null);
+    @Override
+    public View getInfoContents(Marker marker) {
+        // Getting view from the layout file
+        View view = inflater.inflate(R.layout.custom_info_contents, null);
 
-		TextView coordinates = (TextView) v.findViewById(R.id.coordinates);
-		coordinates.setText(marker.getPosition().toString());
+        TextView coordinates = ButterKnife.findById(view, R.id.coordinates);
+        coordinates.setText(marker.getPosition().toString());
 
-		TextView title = (TextView) v.findViewById(R.id.title);
-		title.setText(marker.getTitle());
+        TextView title = ButterKnife.findById(view, R.id.title);
+        title.setText(marker.getTitle());
 
-		TextView info = (TextView) v.findViewById(R.id.snippet);
-		info.setText(marker.getSnippet());
+        TextView info = ButterKnife.findById(view, R.id.snippet);
+        info.setText(marker.getSnippet());
 
-		return v;
-	}
+        return view;
+    }
 
-	@Override
-	public View getInfoWindow(Marker marker) {
-		return null;
-	}
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
 
 }

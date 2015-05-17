@@ -27,7 +27,7 @@
 
         >
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -48,12 +48,12 @@
             android:authorities="com.dogar.geodesic"
             android:exported="false"/>
         <activity
-            android:name="com.dogar.geodesic.activity.GeodesicProblemActivity"
+            android:name="com.dogar.geodesic.activities.GeodesicProblemActivity"
             android:theme="@style/Theme.ProblemActivity"
-            android:parentActivityName=".activity.MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity"/>
+                android:value=".activities.MainActivity"/>
         </activity>
         <service
             android:name=".sync.SyncService"

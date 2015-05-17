@@ -1,29 +1,33 @@
-package com.dogar.geodesic.dialog;
+package com.dogar.geodesic.dialogs;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dogar.geodesic.R;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.widget.TextView;
 
-public class AboutInfoDialog {
-    private Context context;
+public class AboutInfoDialog extends DialogFragment {
+    public static final String TAG = AboutInfoDialog.class.getSimpleName();
 
-    public AboutInfoDialog(Context context) {
-        this.context = context;
+    public static AboutInfoDialog create() {
+        AboutInfoDialog dialog = new AboutInfoDialog();
+        return dialog;
     }
 
-    public void showDialogWindow() {
-        new MaterialDialog.Builder(context).iconRes(R.drawable.ic_launcher)
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog aboutDialog = new MaterialDialog.Builder(getActivity()).iconRes(R.drawable.ic_launcher)
                 .title(R.string.app_name)
                 .content(getInfoContent())
                 .positiveColorRes(R.color.blue)
                 .positiveText(R.string.ok)
-                .show();
+                .build();
+        return aboutDialog;
     }
 
     private CharSequence getInfoContent() {

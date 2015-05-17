@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
  */
 public class SharedPreferencesUtils {
     private static final String USER_GOOGLE_ACCOUNT = "user_google_account";
+    private static final String DELETE_MODE         = "delete_mode";
 
     public static boolean isLoggedIn(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -30,5 +31,15 @@ public class SharedPreferencesUtils {
     public static void deleteLogin(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit().remove(USER_GOOGLE_ACCOUNT).apply();
+    }
+
+    public static void setDeletePointsMode(boolean deleteMode, Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean(DELETE_MODE, deleteMode).apply();
+    }
+
+    public static boolean isDeleteMode(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean(DELETE_MODE, false);
     }
 }
