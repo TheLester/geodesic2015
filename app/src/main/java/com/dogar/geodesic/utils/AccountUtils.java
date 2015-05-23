@@ -4,10 +4,22 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
+
 /**
  * Created by lester on 17.05.15.
  */
 public class AccountUtils {
+    private static GoogleAccountManager googleAccountManager;
+
+    /**
+     * not thread-safe singleton getter of google acc manager
+     * @return
+     */
+    public static GoogleAccountManager getGoogleAccountManager(Context context) {
+        return googleAccountManager == null ? new GoogleAccountManager(context) : googleAccountManager;
+    }
+
     /**
      * Get account
      *
@@ -15,13 +27,7 @@ public class AccountUtils {
      * @param email
      * @return account if found, null otherwise
      */
-    public static Account getAccount(Context context, String email) {
-        Account[] accounts = AccountManager.get(context).getAccounts();
-        for (Account account : accounts) {
-            if (account.name.equals(email)) {
-                return account;
-            }
-        }
-        return null;
+    public static Account getAccount(Context context,String email) {
+      return getGoogleAccountManager(context).getAccountByName(email);
     }
 }

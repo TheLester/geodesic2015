@@ -52,8 +52,10 @@ import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
 import com.dogar.geodesic.utils.AccountUtils;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
+import com.dogar.geodesic.utils.ToastUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -116,16 +118,17 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
 
     @Override
     public boolean onProfileChanged(View view, IProfile iProfile, boolean b) {
-        Toast.makeText(this, iProfile.getEmail(), Toast.LENGTH_LONG).show();
+        ToastUtils.show(this, iProfile.getEmail());
         saveLogin(this, iProfile.getEmail());
         headerResult.setActiveProfile(getSavedProfile());
         //TODO Refresh map
+        setGMFragment();
         return true;
     }
 
     private void initProfiles() {
-        Account[] accounts = AccountManager.get(this).getAccountsByType(GOOGLE_TYPE);
-        for (Account account : accounts) {
+        GoogleAccountManager googleAccountManager = AccountUtils.getGoogleAccountManager(this);
+        for (Account account : googleAccountManager.getAccounts()) {
             profiles.add(new ProfileDrawerItem().withEmail(account.name));
         }
     }
@@ -315,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         .setActionView(R.layout.actionbar_indeterminate_progress);
             } else {
                 refreshItem.setActionView(null);
-//                GMFragment.clearMarkersAndDrawNew();
+                setGMFragment();
             }
         }
     }
@@ -323,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
     private void setGMFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
+                .replace(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
     }
 
 

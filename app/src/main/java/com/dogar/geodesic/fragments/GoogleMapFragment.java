@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,8 @@ import static com.dogar.geodesic.utils.Constants.*;
  */
 public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, OnMapLongClickListener {
+    public static final String TAG = GoogleMapFragment.class.getSimpleName();
+
     private final String PERIMETER = "Perimeter:";
     private final String AREA      = "Area:";
     private final String METERS    = " meters";
@@ -104,11 +107,13 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         super.onCreate(savedInstanceState);
         accountName = SharedPreferencesUtils.getLoginEmail(getActivity());
         EventBus.getDefault().register(this);
+        Log.i(TAG, "created");
     }
 
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
+        Log.i(TAG, "destr");
         super.onDestroy();
     }
 
@@ -125,6 +130,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
                 false);
         ButterKnife.inject(this, rootView);
         getMapFragment().getMapAsync(this);
+        Log.i(TAG, "viewcreated");
         return rootView;
     }
 
@@ -134,6 +140,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         clearPins();
         points.clear();
         ButterKnife.reset(this);
+        Log.i(TAG, "viewdestr");
     }
 
     @Override
@@ -320,12 +327,16 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     private void drawMarkersFromLocalDB() {
         Cursor c = getActivity().getContentResolver().query(CONTENT_URI,
                 PROJECTION, ACCOUNT_FILTER, new String[]{accountName}, null);
-        while (c.moveToNext()) {
-            GeoPoint geoPoint = new GeoPoint(c);
-            boolean isDeleted = (geoPoint.getDeleted() == SQLITE_TRUE);
-            if (!isDeleted) {
-                drawMarker(geoPoint);
+        try {
+            while (c.moveToNext()) {
+                GeoPoint geoPoint = new GeoPoint(c);
+                boolean isDeleted = (geoPoint.getDeleted() == SQLITE_TRUE);
+                if (!isDeleted) {
+                    drawMarker(geoPoint);
+                }
             }
+        } finally {
+            c.close();
         }
     }
 
