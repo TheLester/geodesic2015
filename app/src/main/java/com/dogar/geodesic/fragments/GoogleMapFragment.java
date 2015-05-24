@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +31,7 @@ import com.dogar.geodesic.eventbus.event.EventsWithoutParams;
 import com.dogar.geodesic.eventbus.event.MapTypeChangedEvent;
 import com.dogar.geodesic.eventbus.event.MoveMapCameraEvent;
 import com.dogar.geodesic.eventbus.event.PointInfoEditedEvent;
-import com.dogar.geodesic.model.GeoPoint;
+import com.dogar.geodesic.model.LocalGeoPoint;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -90,6 +91,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     @InjectView(R.id.latitude_info)  TextView       latitudeLabel;
     @InjectView(R.id.longitude_info) TextView       longitudeLabel;
     @InjectView(R.id.coord_panel)    RelativeLayout coordPanel;
+    @InjectView(R.id.progress_bar)   ProgressBar    progressBar;
 
     private GoogleMap googleMap;
 
@@ -129,6 +131,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         View rootView = inflater.inflate(R.layout.google_map_layout, container,
                 false);
         ButterKnife.inject(this, rootView);
+        progressBar.setVisibility(View.VISIBLE);
         getMapFragment().getMapAsync(this);
         Log.i(TAG, "viewcreated");
         return rootView;
@@ -155,6 +158,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         this.googleMap.setOnMarkerClickListener(this);
         this.googleMap.setOnMarkerDragListener(this);
         drawMarkersFromLocalDB();
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -239,7 +243,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
             selectedMarker.hideInfoWindow();
             selectedMarker.showInfoWindow();
             LatLng position = selectedMarker.getPosition();
-            GeoPoint updatedPoint = new GeoPoint(editDoneEvent.getPointTitle(), editDoneEvent.getPointInfo(), dateNowInMs,
+            LocalGeoPoint updatedPoint = new LocalGeoPoint(0, 0, editDoneEvent.getPointTitle(), editDoneEvent.getPointInfo(), dateNowInMs,
                     SQLITE_TRUE,
                     SQLITE_FALSE,
                     String.valueOf(position.latitude),
@@ -253,7 +257,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
     @Override
     public void onMapClick(LatLng point) {
         long timeNow = DateTime.now().getMillis();
-        GeoPoint geoPoint = new GeoPoint(
+        LocalGeoPoint localGeoPoint = new LocalGeoPoint(0, 0,
                 getString(R.string.title),
                 getString(R.string.description),
                 timeNow,
@@ -264,8 +268,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
                 accountName);
 
         getActivity().getContentResolver().insert(CONTENT_URI,
-                geoPoint.toCVWithoutId());
-        drawMarker(geoPoint);
+                localGeoPoint.toCVWithoutId());
+        drawMarker(localGeoPoint);
     }
 
     @Override
@@ -329,10 +333,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
                 PROJECTION, ACCOUNT_FILTER, new String[]{accountName}, null);
         try {
             while (c.moveToNext()) {
-                GeoPoint geoPoint = new GeoPoint(c);
-                boolean isDeleted = (geoPoint.getDeleted() == SQLITE_TRUE);
+                LocalGeoPoint localGeoPoint = new LocalGeoPoint(c);
+                boolean isDeleted = (localGeoPoint.getDeleted() == SQLITE_TRUE);
                 if (!isDeleted) {
-                    drawMarker(geoPoint);
+                    drawMarker(localGeoPoint);
                 }
             }
         } finally {
@@ -340,16 +344,16 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback, G
         }
     }
 
-    private void drawMarker(GeoPoint geoPoint) {
+    private void drawMarker(LocalGeoPoint localGeoPoint) {
         MarkerOptions markerOptions = new MarkerOptions();
         BitmapDescriptor icon = BitmapDescriptorFactory
                 .fromResource(R.drawable.ic_marker);
-        LatLng position = new LatLng(Double.valueOf(geoPoint.getLatitude()), Double.valueOf(geoPoint.getLongitude()));
+        LatLng position = new LatLng(Double.valueOf(localGeoPoint.getLatitude()), Double.valueOf(localGeoPoint.getLongitude()));
         markerOptions.position(position);
         markerOptions.draggable(true);
         markerOptions.icon(icon);
-        markerOptions.title(geoPoint.getTitle());
-        markerOptions.snippet(geoPoint.getInfo() + DATE_DEF + getNowDateTime(geoPoint.getInsertDate()));
+        markerOptions.title(localGeoPoint.getTitle());
+        markerOptions.snippet(localGeoPoint.getInfo() + DATE_DEF + getNowDateTime(localGeoPoint.getInsertDate()));
         Marker newMarker = googleMap.addMarker(markerOptions);
         points.add(newMarker);
         tableOfPreviousPositions.put(newMarker, position);
