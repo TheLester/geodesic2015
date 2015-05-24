@@ -20,6 +20,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SyncInfo;
 import android.content.SyncStatusObserver;
@@ -49,9 +50,12 @@ import com.dogar.geodesic.dialogs.AboutInfoDialog;
 import com.dogar.geodesic.sync.PointsContract;
 import com.dogar.geodesic.sync.SyncAdapter;
 import com.dogar.geodesic.sync.SyncUtils;
+import com.dogar.geodesic.utils.AccountUtils;
 import com.dogar.geodesic.utils.SharedPreferencesUtils;
+import com.dogar.geodesic.utils.ToastUtils;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -114,18 +118,18 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
 
     @Override
     public boolean onProfileChanged(View view, IProfile iProfile, boolean b) {
-        Toast.makeText(this, iProfile.getEmail(), Toast.LENGTH_LONG).show();
+        ToastUtils.show(this, iProfile.getEmail());
         saveLogin(this, iProfile.getEmail());
         headerResult.setActiveProfile(getSavedProfile());
         //TODO Refresh map
+        setGMFragment();
         return true;
     }
 
     private void initProfiles() {
-        Account[] accounts = AccountManager.get(this).getAccountsByType(GOOGLE_TYPE);
-        for (Account account : accounts) {
+        GoogleAccountManager googleAccountManager = AccountUtils.getGoogleAccountManager(this);
+        for (Account account : googleAccountManager.getAccounts()) {
             profiles.add(new ProfileDrawerItem().withEmail(account.name));
-            Log.i("test", account.name);
         }
     }
 
@@ -215,10 +219,10 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
         switch (id) {
             case R.id.delete_mode:
                 reverseCheck(item);
-                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(),this);
+                SharedPreferencesUtils.setDeletePointsMode(item.isChecked(), this);
                 return true;
             case R.id.menu_refresh:
-                SyncUtils.TriggerRefresh();
+                SyncUtils.triggerRefresh(this);
                 return true;
             case R.id.map_terrain:
                 reverseCheck(item);
@@ -291,7 +295,6 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                     if (accountName != null) {
                         saveLogin(this, accountName);
                         headerResult.setActiveProfile(getSavedProfile());
-                        //setGMFragment();
                     }
                 }
                 break;
@@ -315,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
                         .setActionView(R.layout.actionbar_indeterminate_progress);
             } else {
                 refreshItem.setActionView(null);
-//                GMFragment.clearMarkersAndDrawNew();
+                setGMFragment();
             }
         }
     }
@@ -323,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
     private void setGMFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
+                .replace(R.id.frame_container, GoogleMapFragment.newInstance()).commit();
     }
 
 
@@ -335,13 +338,12 @@ public class MainActivity extends AppCompatActivity implements AccountHeader.OnA
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    Context context = MainActivity.this;
                     @SuppressWarnings("deprecation")
                     SyncInfo currentSync = ContentResolver.getCurrentSync();
-//                    setRefreshActionButtonState(currentSync != null
-//                            && currentSync.account.equals(credential
-//                            .getSelectedAccount())
-//                            && currentSync.authority.equals(AUTHORITY));
+                    setRefreshActionButtonState(currentSync != null
+                            && currentSync.account.equals(AccountUtils.getAccount(context, getLoginEmail(context)))
+                            && currentSync.authority.equals(AUTHORITY));
                 }
             });
         }

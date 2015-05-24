@@ -4,6 +4,14 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/size_big"
+        android:layout_height="@dimen/size_big"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -15,9 +23,9 @@
         android:id="@+id/coord_panel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="@dimen/size_tiny"
-        android:layout_alignParentLeft="true"
         android:background="@drawable/coordinates_background"
         android:visibility="gone">
 

@@ -10,18 +10,21 @@ import static com.dogar.geodesic.sync.PointsContract.Entry.*;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_DATE_OF_INSERT;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_DELETE;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_DIRTY;
+import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_ID;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_INFO;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_LATITUDE;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_LONGITUDE;
+import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_POINT_REMOTE_ID;
 import static com.dogar.geodesic.sync.SyncAdapter.COLUMN_TITLE;
-import static com.dogar.geodesic.utils.Constants.SQLITE_TRUE;
 
 /**
  * Created by lester on 13.05.15.
  */
 @Data
 @AllArgsConstructor(suppressConstructorProperties = true)
-public class GeoPoint {
+public class LocalGeoPoint {
+    private int   id;
+    private long   remoteId;
     private String title;
     private String info;
     private long   insertDate;
@@ -31,7 +34,10 @@ public class GeoPoint {
     private String longitude;
     private String accountName;
 
-    public GeoPoint(Cursor c) {
+
+    public LocalGeoPoint(Cursor c) {
+        id = c.getInt(COLUMN_ID);
+        remoteId = c.getLong(COLUMN_POINT_REMOTE_ID);
         title = c.getString(COLUMN_TITLE);
         info = c.getString(COLUMN_INFO);
         insertDate = c.getLong(COLUMN_DATE_OF_INSERT);
@@ -43,7 +49,7 @@ public class GeoPoint {
 
     public ContentValues toCVWithoutId() {
         ContentValues cv = new ContentValues();
-        cv.putNull(COLUMN_NAME_POINT_ID);
+        cv.putNull(COLUMN_NAME_REMOTE_POINT_ID);
         cv.put(COLUMN_NAME_TITLE, title);
         cv.put(COLUMN_NAME_INFO, info);
         cv.put(COLUMN_NAME_DATE_OF_INSERT, insertDate);

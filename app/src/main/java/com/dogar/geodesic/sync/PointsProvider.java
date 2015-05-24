@@ -11,19 +11,19 @@ import android.net.Uri;
 import static com.dogar.geodesic.sync.PointsContract.Entry.*;
 
 public class PointsProvider extends ContentProvider {
-	PointsDatabase mDatabaseHelper;
+	private PointsDatabase mDatabaseHelper;
 
 	// Content authority for this provider.
 	private static final String AUTHORITY = PointsContract.CONTENT_AUTHORITY;
 	/**
 	 * URI ID for route: /entries
 	 */
-	public static final int ROUTE_ENTRIES = 1;
+	private static final int ROUTE_ENTRIES = 1;
 
 	/**
 	 * URI ID for route: /entries/{ID}
 	 */
-	public static final int ROUTE_ENTRIES_ID = 2;
+	private static final int ROUTE_ENTRIES_ID = 2;
 
 	/**
 	 * UriMatcher, used to decode incoming URIs.
@@ -173,18 +173,18 @@ public class PointsProvider extends ContentProvider {
 	 */
 	private static class PointsDatabase extends SQLiteOpenHelper {
 		/** Schema version. */
-		public static final int DATABASE_VERSION = 1;
+		public static final int    DATABASE_VERSION = 1;
 		/** Filename for SQLite file. */
-		public static final String DATABASE_NAME = "feed.db";
+		public static final String DATABASE_NAME    = "geodesic_points.db";
 
-		private static final String TYPE_TEXT = " TEXT";
-		private static final String TYPE_INTEGER = " INTEGER";
-		private static final String COMMA_SEP = ",";
+		private static final String TYPE_TEXT          = " TEXT";
+		private static final String TYPE_INTEGER       = " INTEGER";
+		private static final String COMMA_SEP          = ",";
 		/** SQL statement to create "entry" table. */
 		private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 				+ TABLE_NAME + " ("
 				+ _ID + " INTEGER PRIMARY KEY,"
-				+ COLUMN_NAME_POINT_ID + TYPE_INTEGER
+				+ COLUMN_NAME_REMOTE_POINT_ID + TYPE_INTEGER
 				+ COMMA_SEP + COLUMN_NAME_LATITUDE
 				+ TYPE_TEXT + COMMA_SEP
 				+ COLUMN_NAME_LONGITUDE + TYPE_TEXT
