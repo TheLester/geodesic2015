@@ -1,8 +1,8 @@
-My Task Manager
+Geodesic
 ====
 ![screen][screen1] ![screen][screen2] ![screen][screen3] ![screen][screen4]
 
-Open source application for geodesic measurements and problems. Works on Android 4.0 and above (Also supports Android M).
+Open source application for geodesic measurements and problems. 
 
 
 Try out the application on the Play Store.
